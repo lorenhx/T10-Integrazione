@@ -1,0 +1,41 @@
+# Created at 2023-08-29T12:26:24.425
+TestSet has not finished before stream error has appeared >> initializing exit by non-null configuration: null
+java.io.EOFException
+	at java.base/java.io.DataInputStream.readInt(DataInputStream.java:398)
+	at org.apache.maven.surefire.booter.MasterProcessCommand.decode(MasterProcessCommand.java:115)
+	at org.apache.maven.surefire.booter.CommandReader$CommandRunnable.run(CommandReader.java:391)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+
+
+# Created at 2023-08-29T12:26:46.994
+Unexpected IOException with stream: 2023-08-29T12:26:46.983+02:00  INFO 20528 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data MongoDB repositories in DEFAULT mode.
+
+
+# Created at 2023-08-29T12:26:49.182
+Unexpected IOException with stream: 2023-08-29T12:26:49.173+02:00  INFO 20528 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 1995 ms. Found 4 MongoDB repository interfaces.
+
+
+# Created at 2023-08-29T12:27:01.968
+Unexpected IOException with stream: 2023-08-29T12:27:01.955+02:00  INFO 20528 --- [           main] org.mongodb.driver.client                : MongoClient with metadata {"driver": {"name": "mongo-java-driver|sync|spring-boot", "version": "4.8.2"}, "os": {"type": "Windows", "name": "Windows 11", "architecture": "amd64", "version": "10.0"}, "platform": "Java/Oracle Corporation/18.0.2.1+1-1"} created with settings MongoClientSettings{readPreference=primary, writeConcern=WriteConcern{w=null, wTimeout=null ms, journal=null}, retryWrites=true, retryReads=true, readConcern=ReadConcern{level=null}, credential=null, streamFactoryFactory=null, commandListeners=[], codecRegistry=ProvidersCodecRegistry{codecProviders=[ValueCodecProvider{}, BsonValueCodecProvider{}, DBRefCodecProvider{}, DBObjectCodecProvider{}, DocumentCodecProvider{}, CollectionCodecProvider{}, IterableCodecProvider{}, MapCodecProvider{}, GeoJsonCodecProvider{}, GridFSFileCodecProvider{}, Jsr310CodecProvider{}, JsonObjectCodecProvider{}, BsonCodecProvider{}, EnumCodecProvider{}, com.mongodb.Jep395RecordCodecProvider@63a28987]}, clusterSettings={hosts=[mongo_db:27017], srvServiceName=mongodb, mode=SINGLE, requiredClusterType=UNKNOWN, requiredReplicaSetName='null', serverSelector='null', clusterListeners='[]', serverSelectionTimeout='30000 ms', localThreshold='30000 ms'}, socketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=0, receiveBufferSize=0, sendBufferSize=0}, heartbeatSocketSettings=SocketSettings{connectTimeoutMS=10000, readTimeoutMS=10000, receiveBufferSize=0, sendBufferSize=0}, connectionPoolSettings=ConnectionPoolSettings{maxSize=100, minSize=0, maxWaitTimeMS=120000, maxConnectionLifeTimeMS=0, maxConnectionIdleTimeMS=0, maintenanceInitialDelayMS=0, maintenanceFrequencyMS=60000, connectionPoolListeners=[], maxConnecting=2}, serverSettings=ServerSettings{heartbeatFrequencyMS=10000, minHeartbeatFrequencyMS=500, serverListeners='[]', serverMonitorListeners='[]'}, sslSettings=SslSettings{enabled=false, invalidHostNameAllowed=false, context=null}, applicationName='null', compressorList=[], uuidRepresentation=JAVA_LEGACY, serverApi=null, autoEncryptionSettings=null, contextProvider=null}
+
+
+# Created at 2023-08-29T12:27:10.021
+Unexpected IOException with stream: 2023-08-29T12:27:09.820+02:00  INFO 20528 --- [-mongo_db:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=mongo_db:27017, type=STANDALONE, state=CONNECTED, ok=true, minWireVersion=0, maxWireVersion=17, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=5175248800}
+
+
+# Created at 2023-08-29T12:27:16.369
+Unexpected IOException with stream: 2023-08-29T12:27:16.368+02:00  INFO 20528 --- [           main] c.g.m.ManvsclassApplicationTests         : Started ManvsclassApplicationTests in 71.562 seconds (process running for 119.871)
+
+
+# Created at 2023-08-29T12:27:16.409
+Unexpected IOException: 5,1,com.groom.manvsclass.ManvsclassApplicationTests,contextLoads,null,null,null
+
+
+# Created at 2023-08-29T12:27:17.339
+Unexpected IOException: 6,1,com.groom.manvsclass.ManvsclassApplicationTests,contextLoads,null,null,null
+
+
+# Created at 2023-08-29T12:27:17.344
+Unexpected IOException: 2,1,org.apache.maven.surefire.junitplatform.JUnitPlatformProvider,com.groom.manvsclass.ManvsclassApplicationTests,null,null,null
+
+
