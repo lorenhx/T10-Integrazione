@@ -2,21 +2,21 @@
 <html xmlns:th="http://thymeleaf.org">
 <head>
     <title>Editor di Testo</title>
-    <link rel="stylesheet" th:href="@{./codemirror/lib/codemirror.css}"/>
-    <link rel="stylesheet" th:href="@{./codemirror/theme/lucario.css}"/>
-    <link rel="stylesheet" th:href="@{./codemirror/addon/fold/foldgutter.css}"/>
-    <script th:src="@{/codemirror/lib/codemirror.js}"th:inline="javascript"></script>
-    <script th:src="@{/codemirror/mode/clike/clike.js}"th:inline="javascript"></script>
-    <script th:src="@{/codemirror/addon/fold/foldcode.js}"th:inline="javascript"></script>
-    <script th:src="@{/codemirror/addon/fold/foldgutter.js}"th:inline="javascript"></script>
-    <script th:src="@{/codemirror/addon/fold/brace-fold.js}"th:inline="javascript"></script>
-    <script th:src="@{/codemirror/addon/fold/xml-fold.js}"th:inline="javascript"></script>
-    <script th:src="@{/codemirror/addon/edit/matchbrackets.js}"th:inline="javascript"></script>
-    <script th:src="@{/codemirror/addon/edit/closebrackets.js}"th:inline="javascript"></script>
-    <script th:src="@{/codemirror/addon/edit/trailingspace.js}"th:inline="javascript"></script>
-    <script th:src="@{/codemirror/addon/search/searchcursor.js}"th:inline="javascript"></script>
-    <script th:src="@{/codemirror/addon/search/search.js}"th:inline="javascript"></script>
-    <script th:src="@{/jquery/jquery-3.7.0.com.js}"  th:inline="javascript">
+    <link rel="stylesheet" th:href="@{./t5/codemirror/lib/codemirror.css}"/>
+    <link rel="stylesheet" th:href="@{./t5/codemirror/theme/lucario.css}"/>
+    <link rel="stylesheet" th:href="@{./t5/codemirror/addon/fold/foldgutter.css}"/>
+    <script th:src="@{/t5/codemirror/lib/codemirror.js}"th:inline="javascript"></script>
+    <script th:src="@{/t5/codemirror/mode/clike/clike.js}"th:inline="javascript"></script>
+    <script th:src="@{/t5/codemirror/addon/fold/foldcode.js}"th:inline="javascript"></script>
+    <script th:src="@{/t5/codemirror/addon/fold/foldgutter.js}"th:inline="javascript"></script>
+    <script th:src="@{/t5/codemirror/addon/fold/brace-fold.js}"th:inline="javascript"></script>
+    <script th:src="@{/t5/codemirror/addon/fold/xml-fold.js}"th:inline="javascript"></script>
+    <script th:src="@{/t5/codemirror/addon/edit/matchbrackets.js}"th:inline="javascript"></script>
+    <script th:src="@{/t5/codemirror/addon/edit/closebrackets.js}"th:inline="javascript"></script>
+    <script th:src="@{/t5/codemirror/addon/edit/trailingspace.js}"th:inline="javascript"></script>
+    <script th:src="@{/t5/codemirror/addon/search/searchcursor.js}"th:inline="javascript"></script>
+    <script th:src="@{/t5/codemirror/addon/search/search.js}"th:inline="javascript"></script>
+    <script th:src="@{/t5/jquery/jquery-3.7.0.com.js}"  th:inline="javascript">
     </script>
     
     <style>
@@ -58,7 +58,7 @@
       .editor-bar .image{
         width: 20px;
         height: 20px;
-        background-image: url("./Icone/logo.png");
+        background-image: url("./t5/Icone/logo.png");
         background-size: cover;
         margin-left: 5px;
 
@@ -102,51 +102,51 @@
         opacity:0.5;
       }
       .user-button{
-        background-image: url(./Icone/gameInfo.png);
+        background-image: url(./t5/Icone/gameInfo.png);
 
       }
       .theme-button{
-        background-image: url(./Icone/theme.png);
+        background-image: url(./t5/Icone/theme.png);
         margin-left: 3%;
       }
       .open-button{
-        background-image: url(./Icone/open.png);
+        background-image: url(./t5/Icone/open.png);
         margin-left: 3%;
       }
       .run-button {
-        background-image: url(./Icone/play.png);
+        background-image: url(./t5/Icone/play.png);
         margin-left: 3%;
       }
       .coverage-button{
-        background-image: url(./Icone/jacoco.png);
+        background-image: url(./t5/Icone/jacoco.png);
         margin-left: 3%;
       }
       .save-button{
-        background-image: url(./Icone/floppy-disk.png);
+        background-image: url(./t5/Icone/floppy-disk.png);
         margin-left: 3%;
       }
       .saveAs-button{
-        background-image: url(./Icone/saveAs.png);
+        background-image: url(./t5/Icone/saveAs.png);
         margin-left: 3%;
       }
       .undo-button{
-        background-image: url(./Icone/undo.png);
+        background-image: url(./t5/Icone/undo.png);
         margin-left: 3%;
       }
       .redo-button{
-        background-image: url(./Icone/redo.png);
+        background-image: url(./t5/Icone/redo.png);
         margin-left: 3%;
       }
       .compile-button{
-        background-image: url(./Icone/rearrange.png);
+        background-image: url(./t5/Icone/rearrange.png);
         margin-left: 3%;
       }
       .replace-btn{
-        background-image: url(./Icone/exchange.png);
+        background-image: url(./t5/Icone/exchange.png);
         margin-left: 3%;
       }
       .find-button{
-        background-image: url(./Icone/search.png);
+        background-image: url(./t5/Icone/search.png);
         margin-left: 3%;
       }
       .CodeMirror {
@@ -525,7 +525,7 @@ public class NomeClasseTest {
         var difficolta = "VALORE_DIFFICOLTA";
 
         $.ajax({
-          url: "http://localhost:80/receiveClassUnderTest",
+          url: "http://localhost:8083/receiveClassUnderTest",
           type: "GET",
           data: { 
             idUtente: idUtente,

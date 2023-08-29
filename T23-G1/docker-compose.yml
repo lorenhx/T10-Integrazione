@@ -9,7 +9,6 @@ services:
       - db
     environment:
       DB_URL: jdbc:mysql://db:3306/STUDENTSREPO
-    restart: on-failure
     networks:
       - global-network
 

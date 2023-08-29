@@ -1,5 +1,6 @@
 package com.example.db_setup;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import io.jsonwebtoken.Jwts;
@@ -9,6 +10,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.mail.MessagingException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -151,7 +154,7 @@ public class Controller {
     // Autenticazione
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestParam("email") String email,
-                                        @RequestParam("password") String password) {
+                                        @RequestParam("password") String password, HttpServletResponse response) {
 
         User user = userRepository.findByEmail(email);
 
@@ -168,7 +171,17 @@ public class Controller {
         AuthenticatedUser authenticatedUser = new AuthenticatedUser(user, token);
         authenticatedUserRepository.save(authenticatedUser);
 
-        return ResponseEntity.ok(token);
+        Cookie jwtTokenCookie = new Cookie("jwt", token);
+        response.addCookie(jwtTokenCookie);
+
+        try {
+            response.sendRedirect("/main");
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return ResponseEntity.status(200).body("");
     }
 
     public static String generateToken(User user) {
