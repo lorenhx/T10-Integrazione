@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,7 +41,8 @@ import com.groom.manvsclass.model.repository.SearchRepositoryImpl;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-@RestController
+
+@Controller
 public class HomeController {
 	
 	@Autowired
@@ -62,14 +65,51 @@ public class HomeController {
 		this.userAdmin.setUsername("default");
 		this.srepo=srepo;
 	}
+
+	@GetMapping("/home_adm")
+	public String showHomeAdmin() {
+		return "home_adm";
+	}
 	
+	@GetMapping("/loginAdmin")
+	public String showLoginAdmin() {
+		return "login_admin";
+	}
+
+	@GetMapping("/registraAdmin")
+	public String showRegistraAdmin() {
+		return "registraAdmin";
+	}
+
+	@GetMapping("/modificaClasse")
+	public String showModificaClasse() {
+		return "modificaClasse";
+	}
+	
+	@GetMapping("/uploadClasse")
+	public String showUploadClasse() {
+		return "uploadClasse";
+	}
+
+	@GetMapping("/reportClasse")
+	public String showReportClasse() {
+		return "reportClasse";
+	}
+
+	@GetMapping("/Reports")
+	public String showReports() {
+		return "Reports";
+	}
+
 	@GetMapping("/interaction")
+	@ResponseBody
 	public	List<interaction>	elencaInt()
 	{
 		return repo_int.findAll();
 	}
 	
 	@GetMapping("/findreport")
+	@ResponseBody
 	public	List<interaction> elencaReport()
 	{
 		return srepo.findReport();
@@ -77,6 +117,7 @@ public class HomeController {
 	
 	//Solo x testing
 	@GetMapping("/getLikes/{name}")
+	@ResponseBody
 	public long likes(@PathVariable String name)
 	{
 		long likes=srepo.getLikes(name);
@@ -85,6 +126,7 @@ public class HomeController {
 	}
 	
 	@PostMapping("/newinteraction")
+	@ResponseBody
 	public interaction UploadInteraction(@RequestBody interaction interazione)
 	{
 		return repo_int.save(interazione);
@@ -104,6 +146,7 @@ public class HomeController {
 	}
 	
 	@PostMapping("/newlike/{name}")
+	@ResponseBody
 	public String newLike(@PathVariable String name) {
 	    interaction newInteraction = new interaction();
 	    //Finta chiamata all'API utente
@@ -125,6 +168,7 @@ public class HomeController {
 	}
 	
 	@PostMapping("/newReport/{name}")
+	@ResponseBody
 	public String newReport(@PathVariable String name, @RequestBody String commento ) {
 	    interaction newInteraction = new interaction();
 	    
@@ -152,6 +196,7 @@ public class HomeController {
 	}
 	
 	@PostMapping("/deleteint/{id_i}")
+	@ResponseBody
 	public interaction eliminaInteraction(@PathVariable int id_i) {
 		Query query= new Query(); 
 	   query.addCriteria(Criteria.where("id_i").is(id_i));
@@ -160,42 +205,49 @@ public class HomeController {
 	
 	
 	@GetMapping("/home")
+	@ResponseBody
 	public	List<ClassUT>	elencaClassi()
 	{
 		return repo.findAll();
 	}
 	
 	@GetMapping("/orderbydate")
+	@ResponseBody
 	public List<ClassUT> ordinaClassi()
 	{
 		return srepo.orderByDate();
 	}
 
 	@GetMapping("/orderbyname")
+	@ResponseBody
 	public List<ClassUT> ordinaClassiNomi()
 	{
 		return srepo.orderByName();
 	}
 	
 	@GetMapping("/Cfilterby/{category}")
+	@ResponseBody
 	public List<ClassUT> filtraClassi(@PathVariable String category)
 	{
 		return srepo.filterByCategory(category);
 	}
 	
 	@GetMapping("/Cfilterby/{text}/{category}")
+	@ResponseBody
 	public	List<ClassUT>	filtraClassi(@PathVariable String text,@PathVariable String category)
 	{
 		return srepo.searchAndFilter(text,category);
 	}
 	
 	@GetMapping("/Dfilterby/{difficulty}")
+	@ResponseBody
 	public List<ClassUT> elencaClassiD(@PathVariable String difficulty)
 	{
 		return srepo. filterByDifficulty(difficulty);
 	}
 	
 	@GetMapping("/Dfilterby/{text}/{difficulty}")
+	@ResponseBody
 	public	List<ClassUT>	elencaClassiD(@PathVariable String text,@PathVariable String difficulty)
 	{
 		return srepo.searchAndDFilter(text,difficulty);
@@ -203,6 +255,7 @@ public class HomeController {
 	
 
 	@PostMapping("/insert")
+	@ResponseBody
 	public ClassUT UploadClasse(@RequestBody ClassUT classe)
 	{
 		LocalDate currentDate = LocalDate.now();
@@ -214,6 +267,7 @@ public class HomeController {
 	}
 
 	@PostMapping("/uploadFile")
+	@ResponseBody
 	public ResponseEntity<FileUploadResponse> uploadFile(@RequestParam("file") MultipartFile multipartFile,@RequestParam("model") String model) throws IOException
 	{
 		ObjectMapper mapper = new ObjectMapper();
@@ -241,6 +295,7 @@ public class HomeController {
 	}
 	
 	@PostMapping("/delete/{name}")
+	@ResponseBody
 	public ClassUT eliminaClasse(@PathVariable String name) {
 		Query query= new Query(); 
 	   query.addCriteria(Criteria.where("name").is(name));
@@ -254,6 +309,7 @@ public class HomeController {
 	}
 
 	@PostMapping("/deleteFile/{fileName}")
+	@ResponseBody
 	public ResponseEntity<String> eliminaFile(@PathVariable String fileName) {
 	  String folderPath = "Files-Upload/"+ fileName; 
 	  
@@ -274,12 +330,14 @@ public class HomeController {
 
 	
 	@GetMapping("/home/{text}")
+	@ResponseBody
 	public	List<ClassUT>	ricercaClasse(@PathVariable String text)
 	{
 		return srepo.findByText(text);
 	}
 	
 	@GetMapping("/downloadFile/{name}")
+	@ResponseBody
 	    public ResponseEntity<?> downloadClasse(@PathVariable("name") String name) throws Exception {
 		 	   List<ClassUT> classe= srepo.findByText(name);
 		 	   
@@ -288,6 +346,7 @@ public class HomeController {
 	 
 
 @PostMapping("/update/{name}")
+@ResponseBody
 public ResponseEntity<String> modificaClasse(@PathVariable String name, @RequestBody ClassUT newContent) {
 			Query query= new Query();
 			
@@ -313,6 +372,7 @@ public ResponseEntity<String> modificaClasse(@PathVariable String name, @Request
 
 
 @PostMapping("/registraAdmin")
+@ResponseBody
 public Admin registraAdmin(@RequestBody Admin admin1)
 {
 	this.userAdmin.setUsername(admin1.getUsername());
@@ -321,6 +381,7 @@ public Admin registraAdmin(@RequestBody Admin admin1)
 }
 
 @PostMapping("/loginAdmin")
+@ResponseBody
 public String loginAdmin(@RequestBody Admin admin1) {
     Admin admin = srepo.findAdminByUsername(admin1.getUsername());
     if (admin.getPassword().equals(admin1.getPassword())) {   	
@@ -333,6 +394,7 @@ public String loginAdmin(@RequestBody Admin admin1) {
 }
 
 @GetMapping("/admins/{username}")
+@ResponseBody
 public Admin getAdminByUsername(@PathVariable String username) {
     return srepo.findAdminByUsername(username);
 }

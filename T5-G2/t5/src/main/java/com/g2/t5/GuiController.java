@@ -2,24 +2,33 @@ package com.g2.t5;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.RestTemplate;
+
+import com.g2.Model.ClassUT;
 import com.g2.Model.Game;
 import com.g2.Model.Player;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.Map;  
 
+@CrossOrigin
 @Controller
 public class GuiController {
 
@@ -33,25 +42,31 @@ public class GuiController {
     private Integer myRobot = null;
     private Map<Integer, String> hashMap = new HashMap<>();
     private Map<Integer, String> hashMap2 = new HashMap<>();
-    private final FileController fileController;
+    // private final FileController fileController;
+    private RestTemplate restTemplate;
 
-    public GuiController(FileController fileController) {
-        this.fileController = fileController;
+    @Autowired
+    public GuiController(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
-    @GetMapping("/login")
-    public String loginPage() {
-        return "login"; // Nome del template Thymeleaf per la pagina1.html
-    }
+    // @GetMapping("/login")
+    // public String loginPage() {
+    //     return "login"; // Nome del template Thymeleaf per la pagina1.html
+    // }
 
     @GetMapping("/main")
     public String GUIController(Model model) {
 
-        fileController.listFilesInFolder("/app/AUTName/AUTSourceCode");
-        int size = fileController.getClassSize();
+        // fileController.listFilesInFolder("/app/AUTName/AUTSourceCode");
+        // int size = fileController.getClassSize();
 
-        for (int i = 0; i < size; i++) {
-            String valore = fileController.getClass(i);
+        ResponseEntity<List<ClassUT>> responseEntity = restTemplate.exchange("http://manvsclass-controller-1:8080/home", HttpMethod.GET, null, new ParameterizedTypeReference<List<ClassUT>>(){});
+
+        List<ClassUT> classes = responseEntity.getBody();
+
+        for (int i = 0; i < classes.size(); i++) {
+            String valore = classes.get(i).getName();
             hashMap.put(i, valore);
         }
 
@@ -151,10 +166,10 @@ public class GuiController {
                 .body(fileResource);
     }
 
-    @GetMapping("/change_password")
-    public String showChangePasswordPage() {
-        return "change_password";
-    }
+    // @GetMapping("/change_password")
+    // public String showChangePasswordPage() {
+    //     return "change_password";
+    // }
 
     @GetMapping("/editor")
     public String editorPage(Model model) {

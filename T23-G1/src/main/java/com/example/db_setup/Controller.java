@@ -86,8 +86,12 @@ public class Controller {
                                             @RequestParam("password") String password,
                                             @RequestParam("check_password") String check_password,
                                             @RequestParam("studies") Studies studies,
-                                            @RequestParam("g-recaptcha-response") String gRecaptchaResponse) {
+                                            @RequestParam("g-recaptcha-response") String gRecaptchaResponse, HttpServletRequest request) {
         
+        if(isJwtCookieValid(request)) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Already logged in");
+        }
+
         //verifica del recaptcha
         verifyReCAPTCHA(gRecaptchaResponse);
         
@@ -164,7 +168,11 @@ public class Controller {
     // Autenticazione
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestParam("email") String email,
-                                        @RequestParam("password") String password, HttpServletResponse response) {
+                                        @RequestParam("password") String password, HttpServletRequest request, HttpServletResponse response) {
+
+        if(isJwtCookieValid(request)) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Already logged in");
+        }
 
         User user = userRepository.findByEmail(email);
 
@@ -182,6 +190,7 @@ public class Controller {
         authenticatedUserRepository.save(authenticatedUser);
 
         Cookie jwtTokenCookie = new Cookie("jwt", token);
+        jwtTokenCookie.setMaxAge(3600);
         response.addCookie(jwtTokenCookie);
 
         try {
@@ -203,6 +212,7 @@ public class Controller {
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(expiration))
                 .claim("userId", user.getID())
+                .claim("role", "user")
                 .signWith(SignatureAlgorithm.HS256, "mySecretKey")
                 .compact();
 
@@ -210,13 +220,26 @@ public class Controller {
     }
 
     // Logout
+    @GetMapping("/logout")
+    public ModelAndView logout(HttpServletResponse response) {
+        Cookie jwtTokenCookie = new Cookie("jwt", null);
+        jwtTokenCookie.setMaxAge(0);
+        response.addCookie(jwtTokenCookie);
+
+        return new ModelAndView("redirect:http://localhost/login"); 
+    }
+
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestParam("authToken") String authToken) {
+    public ResponseEntity<String> logout(@RequestParam("authToken") String authToken, HttpServletResponse response) {
         AuthenticatedUser authenticatedUser = authenticatedUserRepository.findByAuthToken(authToken);
 
         if (authenticatedUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
         }
+
+        Cookie jwtTokenCookie = new Cookie("jwt", null);
+        jwtTokenCookie.setMaxAge(0);
+        response.addCookie(jwtTokenCookie);
 
         authenticatedUserRepository.delete(authenticatedUser);
         return ResponseEntity.ok("Logout successful");
@@ -226,7 +249,10 @@ public class Controller {
     
     //Recupera Password
     @PostMapping("/password_reset")
-    public ResponseEntity<String> resetPassword(@RequestParam("email") String email) {
+    public ResponseEntity<String> resetPassword(@RequestParam("email") String email, HttpServletRequest request) {
+        if(isJwtCookieValid(request)) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Already logged in");
+        }
 
         User user = userRepository.findByEmail(email);
 
@@ -251,7 +277,11 @@ public class Controller {
     public ResponseEntity<String> changePassword(@RequestParam("email") String email,
                                                 @RequestParam("token") String resetToken,
                                                 @RequestParam("newPassword") String newPassword,
-                                                @RequestParam("confirmPassword") String confirmPassword) {
+                                                @RequestParam("confirmPassword") String confirmPassword, HttpServletRequest request) {
+
+        if(isJwtCookieValid(request)) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Already logged in");
+        }
 
         User user = userRepository.findByEmail(email);
 
@@ -282,76 +312,86 @@ public class Controller {
         return ResponseEntity.ok("Password change successful");
     }
 
-    // ID per il task 5
-    @GetMapping("/get_ID")
-    public Integer getID(@RequestParam("email") String email, @RequestParam("password") String password){
+    // // ID per il task 5
+    // @GetMapping("/get_ID")
+    // public Integer getID(@RequestParam("email") String email, @RequestParam("password") String password){
         
-        User user = userRepository.findByEmail(email);
+    //     User user = userRepository.findByEmail(email);
 
-        if (user == null) {
-            return -1;
-        }
+    //     if (user == null) {
+    //         return -1;
+    //     }
 
-        boolean passwordMatches = myPasswordEncoder.matches(password, user.password);
-        if (!passwordMatches) {
-            return -1;
-        }
+    //     boolean passwordMatches = myPasswordEncoder.matches(password, user.password);
+    //     if (!passwordMatches) {
+    //         return -1;
+    //     }
 
-        Integer ID= user.ID;
+    //     Integer ID= user.ID;
 
-        return ID;
-    }
+    //     return ID;
+    // }
 
     /* GET PER LE VIEW */
 
+    public boolean isJwtCookieValid(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+
+        if(cookies != null) {
+            List<Cookie> jwtCookies = Arrays.stream(cookies)
+                .filter(cookie->cookie.getName().equals("jwt")).collect(Collectors.toList());
+                
+            if(jwtCookies != null && jwtCookies.size() > 0) {
+                try {
+                    Claims c = Jwts.parser().setSigningKey("mySecretKey").parseClaimsJws(jwtCookies.get(0).getValue()).getBody();
+
+                    if((new Date()).before(c.getExpiration())) {
+                        return true;
+                    }
+                } catch(Exception e) {
+                    System.err.println(e);
+                }
+            }
+        }
+        
+        return false;
+    }
+
     @GetMapping("/register")
-    public ModelAndView showRegistrationForm() {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("register");
-        return modelAndView;
+    public ModelAndView showRegistrationForm(HttpServletRequest request) {
+        if(isJwtCookieValid(request)) return new ModelAndView("redirect:http://localhost/main"); 
+
+        return new ModelAndView("register");
     }
 
     @GetMapping("/login")
     public ModelAndView showLoginForm(HttpServletRequest request) {
-        List<Cookie> jwtCookies = Arrays.stream(request.getCookies())
-            .filter(cookie->cookie.getName().equals("jwt")).collect(Collectors.toList());
-            
-        if(jwtCookies != null && jwtCookies.size() > 0) {
-            try {
-                Claims c = Jwts.parser().setSigningKey("mySecretKey").parseClaimsJws(jwtCookies.get(0).getValue()).getBody();
+        if(isJwtCookieValid(request)) return new ModelAndView("redirect:http://localhost/main"); 
 
-                if((new Date()).before(c.getExpiration())) {
-                    return new ModelAndView("redirect:/main");
-                }
-            } catch(JwtException e) {
-                System.err.println(e);
-            }
-        }
-        
         return new ModelAndView("login");
     }
 
     
     @GetMapping("/password_reset")
-    public ModelAndView showResetForm() {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("password_reset");
-        return modelAndView;
+    public ModelAndView showResetForm(HttpServletRequest request) {
+        if(isJwtCookieValid(request)) return new ModelAndView("redirect:http://localhost/main"); 
+        
+        return new ModelAndView("password_reset");
     }
 
     
     @GetMapping("/password_change")
-    public ModelAndView showChangeForm() {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("password_change");
-        return modelAndView;
+    public ModelAndView showChangeForm(HttpServletRequest request) {
+        if(isJwtCookieValid(request)) return new ModelAndView("redirect:http://localhost/main"); 
+
+        return new ModelAndView("password_change");
     }
 
     @GetMapping("/mail_register")
-    public ModelAndView showMailForm() {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("mail_register");
-        return modelAndView;
+    public ModelAndView showMailForm(HttpServletRequest request) {
+        if(isJwtCookieValid(request)) return new ModelAndView("redirect:http://localhost/main"); 
+
+        return new ModelAndView("mail_register");
     }
 
 

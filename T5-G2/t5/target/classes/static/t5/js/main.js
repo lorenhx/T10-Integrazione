@@ -13,6 +13,25 @@ var bottonePrecedente2 = null;
 
 var selectedElement = null;
 
+const getCookie = (name) => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+}
+
+const parseJwt = (token) => {
+  try {
+      return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+      return null;
+  }
+};
+
+document.addEventListener("DOMContentLoaded", (e) => {
+  document.getElementById("usernameField").innerText = parseJwt(getCookie("jwt")).sub;
+});
+
 function Handlebuttonclass(id, button) {
   $(document).ready(function () {
     classe = id;
@@ -59,7 +78,7 @@ function redirectToPagereport() {
   if (classe && robot) {
 
     $.ajax({
-      url: '/sendVariable', // L'URL del tuo endpoint sul server
+      url: 'http://localhost:8082/sendVariable', // L'URL del tuo endpoint sul server
       type: 'POST', // Metodo HTTP da utilizzare
       data: {
         myVariable: classe,
@@ -99,7 +118,7 @@ if(user && password ){
   alert("Login effettuato con successo");
   
   $.ajax({
-    url:'/login-variabiles',
+    url:'http://localhost:8082/login-variabiles',
     type: 'POST',
     data: { 
       var1: user, 
@@ -119,7 +138,7 @@ else{
 function redirectToPageeditor() {
 
   $.ajax({
-    url:'/save-data',
+    url:'http://localhost:8082/save-data',
     type:'POST'
   })
   window.location.href = "/editor";

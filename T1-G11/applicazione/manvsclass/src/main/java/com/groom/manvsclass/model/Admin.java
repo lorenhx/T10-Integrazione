@@ -9,12 +9,12 @@ public class Admin {
 	private	String	username;
 	private String password;
 	
-	 public Admin(String nome, String cognome, String username, String password) {
-	        this.nome = nome;
-	        this.cognome = cognome;
-	        this.username = username;
-	        this.password = password;
-	    }
+	public Admin(String nome, String cognome, String username, String password) {
+		this.nome = nome;
+		this.cognome = cognome;
+		this.username = username;
+		this.password = password;
+	}
 	 
 	public String getNome() {
 		return nome;
