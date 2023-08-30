@@ -3,14 +3,24 @@ package com.example.db_setup;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Header;
+import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -181,7 +191,7 @@ public class Controller {
             e.printStackTrace();
         }
 
-        return ResponseEntity.status(200).body("");
+        return ResponseEntity.status(302).body("");
     }
 
     public static String generateToken(User user) {
@@ -302,10 +312,23 @@ public class Controller {
     }
 
     @GetMapping("/login")
-    public ModelAndView showLoginForm() {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("login");
-        return modelAndView;
+    public ModelAndView showLoginForm(HttpServletRequest request) {
+        List<Cookie> jwtCookies = Arrays.stream(request.getCookies())
+            .filter(cookie->cookie.getName().equals("jwt")).collect(Collectors.toList());
+            
+        if(jwtCookies != null && jwtCookies.size() > 0) {
+            try {
+                Claims c = Jwts.parser().setSigningKey("mySecretKey").parseClaimsJws(jwtCookies.get(0).getValue()).getBody();
+
+                if((new Date()).before(c.getExpiration())) {
+                    return new ModelAndView("redirect:/main");
+                }
+            } catch(JwtException e) {
+                System.err.println(e);
+            }
+        }
+        
+        return new ModelAndView("login");
     }
 
     
