@@ -77,25 +77,28 @@ function redirectToPagereport() {
   console.log(robot);
   if (classe && robot) {
 
-    $.ajax({
-      url: 'http://localhost:8082/sendVariable', // L'URL del tuo endpoint sul server
-      type: 'POST', // Metodo HTTP da utilizzare
-      data: {
-        myVariable: classe,
-        myVariable2: robot
-      }, // Dati da inviare al server
-      success: function (response) {
-        console.log('Dati inviati con successo');
-        alert("Dati inviati con successo");
-        // Gestisci la risposta del server qui
-        window.location.href = "/report";
-      },
-      error: function (error) {
-        console.error('Errore nell invio dei dati');
-        alert("Dati non inviati con successo");
-        // Gestisci l'errore qui
-      }
-    });
+    // $.ajax({
+    //   url: 'http://localhost:8082/sendVariable', // L'URL del tuo endpoint sul server
+    //   type: 'POST', // Metodo HTTP da utilizzare
+    //   data: {
+    //     myVariable: classe,
+    //     myVariable2: robot
+    //   }, // Dati da inviare al server
+    //   success: function (response) {
+    //     console.log('Dati inviati con successo');
+    //     alert("Dati inviati con successo");
+    //     // Gestisci la risposta del server qui
+    //     window.location.href = "/report";
+    //   },
+    //   error: function (error) {
+    //     console.error('Errore nell invio dei dati');
+    //     alert("Dati non inviati con successo");
+    //     // Gestisci l'errore qui
+    //   }
+    // });
+    localStorage.setItem("classe", classe);
+    localStorage.setItem("robot", robot);
+    window.location.href = "/report";
   }
   else {
     alert("Seleziona una classe e un robot");
@@ -136,9 +139,13 @@ else{
 }
 
 function redirectToPageeditor() {
-
   $.ajax({
     url:'http://localhost:8082/save-data',
+    data: {
+      playerId: parseJwt(getCookie("jwt")).userId,
+      classe: classe,
+      robot: robot
+    },
     type:'POST'
   })
   window.location.href = "/editor";
@@ -148,13 +155,10 @@ function redirectToPageeditor() {
 function downloadFile() {
   fileId = classe;
   if (fileId) {
-    const downloadUrl = '/download';
-    const formData = new FormData();
-    formData.append('elementId', fileId);
+    const downloadUrl = 'http://localhost:8080/downloadFile/' + fileId;
 
     fetch(downloadUrl, {
-      method: 'POST',
-      body: formData
+      method: 'GET',
     })
       .then(function(response) {
         if (response.ok) {

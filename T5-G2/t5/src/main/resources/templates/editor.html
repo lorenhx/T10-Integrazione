@@ -517,12 +517,12 @@ public class NomeClasseTest {
 
         //ricezione di CUT e game info
       $(document).ready(function() {
-        var idUtente = "VALORE_ID_UTENTE";
-        var idPartita = "VALORE_ID_PARTITA";
-        var idTurno = "VALORE_ID_TURNO";
-        var nameCUT= "CLASS_UNDER_TEST";
-        var robotScelto = "VALORE_ROBOT_SCELTO";
-        var difficolta = "VALORE_DIFFICOLTA";
+        var idUtente = parseJwt(getCookie("jwt")).userId;
+        var idPartita = localStorage.getItem("");
+        var idTurno = ;
+        var nameCUT= localStorage.getItem("classe");
+        var robotScelto = localStorage.getItem("robot");
+        var difficolta = "easy";
 
         $.ajax({
           url: "http://localhost:8083/receiveClassUnderTest",

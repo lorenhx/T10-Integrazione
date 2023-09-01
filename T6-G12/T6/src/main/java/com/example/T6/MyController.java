@@ -58,7 +58,7 @@ public class MyController {
     ) {
         try {
             // Esegui la richiesta HTTP al servizio esterno per ottenere il file ClassUnderTest.java
-            String url = "http://manvsclass-controller-1:8080/downloadFile/HSLColor";
+            String url = "http://manvsclass-controller-1:8080/downloadFile/" + nomeCUT;
             String classUnderTest = restTemplate.getForObject(url, String.class);
 
             JSONObject resp = new JSONObject();
@@ -198,6 +198,7 @@ public class MyController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
     @PostMapping("/inviaDatiEFile")
     public ResponseEntity<String> handleInviaDatiEFileRequest(
             @RequestParam("idUtente") String idUtente,

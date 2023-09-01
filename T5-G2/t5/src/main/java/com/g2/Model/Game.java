@@ -3,56 +3,59 @@ package com.g2.Model;
 import java.time.*;
 
 public class Game {
-    private String username;
-    private long gameId;
-    private String playerClass;
-    private String robot;
+    private int playerId;
+    private long id;
+    private String description;
+    private String name;
+    private String difficulty;
     private LocalDate data_creazione;
     private String ora_creazione;
 
-    public Game() {
-        this.gameId = 0;
+    public Game(int playerId, String description, String name, String difficulty) {
+        this.playerId = playerId;
+        this.description = description;
+        this.name = name;
+        this.difficulty = difficulty;
     }
 
-    public Game(String username, long gameId, String playerClass, String robot) {
-        this.username = username;
-        this.gameId = gameId;
-        this.playerClass = playerClass;
-        this.robot = robot;
+    public int getPlayerId() {
+        return playerId;
     }
 
-    public String getUsername() {
-        return username;
+    public void setPlayerId(int playerId) {
+        this.playerId = playerId;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public long getId() {
+        return id;
     }
 
-    public long getGameId() {
-        return gameId;
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public void setGameId(long gameId) {
-        // incremento l'id del gioco per ogni partita poichè in gameID mi viene
-        // restituito come l'ultimo id del file
-        this.gameId = ++gameId;
+    public String getDescription() {
+        return description;
     }
 
-    public String getPlayerClass() {
-        return playerClass;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public void setPlayerClass(String playerClass) {
-        this.playerClass = playerClass;
+    public String getName() {
+        return name;
     }
 
-    public String getRobot() {
-        return robot;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setRobot(String robot) {
-        this.robot = robot;
+    public String getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(String difficulty) {
+        this.difficulty = difficulty;
     }
 
     public LocalDate getData_creazione() {

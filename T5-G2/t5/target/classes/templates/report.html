@@ -26,7 +26,7 @@
             <img src="/t5/images/George_line.png" alt="Linea colorata curva" style="width: 377px; height: 32px;">
           </div>
         <div class="class_test">
-          <span class="lab_r1"> CLASS TO TEST<p class="custom-p1" style="display: inline-block;" th:text=${classe}></p></span>
+          <span class="lab_r1"> CLASS TO TEST<p id="class" class="custom-p1" style="display: inline-block;"></p></span>
           <!-- <div class="divisore">
               <span class="div_blanco"></span>
               style="width: 377px; height: 32px;"
@@ -34,7 +34,7 @@
         </div>
       </div>
       <div class="robot_test">
-        <span class="lab_r"> ROBOT TO FIGHT <p class="custom-p2" style="display: inline-block;" th:text=${robot}></p></span>
+        <span class="lab_r"> ROBOT TO FIGHT <p id="robot" class="custom-p2" style="display: inline-block;"></p></span>
       </div>
     </div><!-- Fine Contenuto riga 1 -->
   
@@ -45,13 +45,15 @@
       </div>
   </div>
   <script>
+    document.getElementById("class").innerText = localStorage.getItem("classe");
+    document.getElementById("robot").innerText = localStorage.getItem("robot");
   // Recupera le variabili dalla memoria locale
-  var username = localStorage.getItem("username");
+  // var username = localStorage.getItem("username");
 
   // Utilizza le variabili come desiderato nella pagina successiva
-  console.log("Username:", username);
+  // console.log("Username:", username);
   // Puoi anche utilizzare le variabili per modificare il contenuto HTML
-  document.getElementById("usernameField").innerText = username;
+  // document.getElementById("usernameField").innerText = username;
 </script>
 </body>
 </html>

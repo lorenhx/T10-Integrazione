@@ -1,6 +1,6 @@
 {
-    "postgresUrl": "",
-    "listenAddress": "localhost:3000",
+    "postgresUrl": "postgresql://postgres:postgres@t4-g18-db-1:5432/postgres",
+    "listenAddress": "0.0.0.0:3000",
     "apiPrefix": "/",
     "dataPath": "data",
     "enableSwagger": false,
