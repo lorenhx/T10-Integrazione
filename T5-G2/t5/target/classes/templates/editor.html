@@ -437,6 +437,21 @@ public class NomeClasseTest {
   </div>
 
     <script>
+      const getCookie = (name) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+      }
+
+      const parseJwt = (token) => {
+        try {
+            return JSON.parse(atob(token.split('.')[1]));
+        } catch (e) {
+            return null;
+        }
+      };
+
       var sidebarEditor = CodeMirror.fromTextArea(document.getElementById("sidebar-textarea"), {
         mode: "text/x-java",
         indentWithTabs:true,
@@ -518,8 +533,8 @@ public class NomeClasseTest {
         //ricezione di CUT e game info
       $(document).ready(function() {
         var idUtente = parseJwt(getCookie("jwt")).userId;
-        var idPartita = localStorage.getItem("");
-        var idTurno = ;
+        var idPartita = localStorage.getItem("gameId");
+        var idTurno = localStorage.getItem("roundId");
         var nameCUT= localStorage.getItem("classe");
         var robotScelto = localStorage.getItem("robot");
         var difficolta = "easy";
@@ -985,27 +1000,28 @@ public class NomeClasseTest {
       modal2Content.insertBefore(titleElement, modal2Content.firstChild);
       // Aggiungi i campi
       var idUtenteElement = document.createElement("p");
-      var usernamej = "[[${username}]]";
+      var usernamej = parseJwt(getCookie("jwt")).userId;
       idUtenteElement.textContent = "UserID: "+usernamej;
       modal2Content.appendChild(idUtenteElement);
 
       var idPartitaElement = document.createElement("p");
-      var gameIDj = "[[${gameIDj}]]";
+      var gameIDj = localStorage.getItem("gameId");
       idPartitaElement.textContent = "GameID: "+gameIDj;
       modal2Content.appendChild(idPartitaElement);
 
       var idTurnoElement = document.createElement("p");
-      idTurnoElement.textContent = "Turno: 1";
+      var turnoIDj = localStorage.getItem("roundId");
+      idTurnoElement.textContent = "Turno: " + turnoIDj;
       modal2Content.appendChild(idTurnoElement);
 
       var robotSceltoElement = document.createElement("p");
-      var robotj="[[${robot}]]";
+      var robotj= localStorage.getItem("robot");
       robotSceltoElement.textContent = "Robot:" +robotj;
       modal2Content.appendChild(robotSceltoElement);
 
-      var difficoltaElement = document.createElement("p");
-      difficoltaElement.textContent = "Livello: 1";
-      modal2Content.appendChild(difficoltaElement);
+      // var difficoltaElement = document.createElement("p");
+      // difficoltaElement.textContent = "Livello: 1";
+      // modal2Content.appendChild(difficoltaElement);
     </script>
 
     <script th:inline="javascript">

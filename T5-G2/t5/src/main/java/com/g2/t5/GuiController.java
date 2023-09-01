@@ -150,6 +150,8 @@ public class GuiController {
 
         JSONObject ids = gameDataWriter.saveGame(g);
 
+        if(ids == null) return ResponseEntity.badRequest().body("Bad Request");
+
         return ResponseEntity.ok(ids.toString());
 
     }

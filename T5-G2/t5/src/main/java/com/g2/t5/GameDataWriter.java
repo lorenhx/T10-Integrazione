@@ -91,6 +91,12 @@ public class GameDataWriter {
             httpPost.setEntity(jsonEntity);
 
             HttpResponse httpResponse = httpClient.execute(httpPost);
+            int statusCode = httpResponse.getStatusLine().getStatusCode();
+
+            if(statusCode > 299) {
+                System.err.println(EntityUtils.toString(httpResponse.getEntity()));
+                return null;
+            }
 
             HttpEntity responseEntity = httpResponse.getEntity();
             String responseBody = EntityUtils.toString(responseEntity);
@@ -109,6 +115,12 @@ public class GameDataWriter {
             httpPost.setEntity(jsonEntity);
 
             httpResponse = httpClient.execute(httpPost);
+            statusCode = httpResponse.getStatusLine().getStatusCode();
+            
+            if(statusCode > 299) {
+                System.err.println(EntityUtils.toString(httpResponse.getEntity()));
+                return null;
+            }
 
             responseEntity = httpResponse.getEntity();
             responseBody = EntityUtils.toString(responseEntity);
@@ -117,7 +129,8 @@ public class GameDataWriter {
             Integer round_id = responseObj.getInt("id"); // salvo il round id che l'Api mi restituisce
 
             JSONObject turn = new JSONObject();
-            turn.put("players", game.getPlayerId());
+
+            turn.put("players", playersArray);
             turn.put("roundId", round_id);
             turn.put("startedAt", time);
 
@@ -127,11 +140,18 @@ public class GameDataWriter {
             httpPost.setEntity(jsonEntity);
 
             httpResponse = httpClient.execute(httpPost);
+            statusCode = httpResponse.getStatusLine().getStatusCode();
+            
+            if(statusCode > 299) {
+                System.err.println(EntityUtils.toString(httpResponse.getEntity()));
+                return null;
+            }
 
             responseEntity = httpResponse.getEntity();
             responseBody = EntityUtils.toString(responseEntity);
-            responseObj = new JSONObject(responseBody);
-            Integer turn_id = responseObj.getInt("id"); // salvo il turn id che l'Api mi restituisce
+
+            JSONArray responseArrayObj = new JSONArray(responseBody);
+            Integer turn_id = responseArrayObj.getJSONObject(0).getInt("id"); // salvo il turn id che l'Api mi restituisce
 
             JSONObject resp = new JSONObject();
             resp.put("game_id", game_id);
@@ -139,9 +159,9 @@ public class GameDataWriter {
             resp.put("turn_id", turn_id);
 
             return resp;
-
         } catch (IOException e) {
             // Gestisci l'eccezione o restituisci un errore appropriato
+            System.err.println(e);
             return null;
         }
         // try {

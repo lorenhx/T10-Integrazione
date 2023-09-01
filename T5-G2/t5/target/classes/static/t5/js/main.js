@@ -146,9 +146,21 @@ function redirectToPageeditor() {
       classe: classe,
       robot: robot
     },
-    type:'POST'
+    type:'POST',
+    success: function (response) {
+      // Gestisci la risposta del server qui
+      localStorage.setItem("gameId", response.game_id);
+      localStorage.setItem("turnId", response.turn_id);
+      localStorage.setItem("roundId", response.round_id);
+      window.location.href = "/editor";
+    },
+    dataType: "json",
+    error: function (error) {
+      console.error('Errore nell invio dei dati');
+      alert("Dati non inviati con successo");
+      // Gestisci l'errore qui
+    }
   })
-  window.location.href = "/editor";
 }
 
 // Funzione per gestire il click sul bottone di download
