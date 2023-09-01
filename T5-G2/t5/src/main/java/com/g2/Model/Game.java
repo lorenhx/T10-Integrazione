@@ -10,12 +10,18 @@ public class Game {
     private String difficulty;
     private LocalDate data_creazione;
     private String ora_creazione;
+    private String classe;
+
+    public void setClasse(String classe) {
+        this.classe = classe;
+    }
 
     public Game(int playerId, String description, String name, String difficulty) {
         this.playerId = playerId;
         this.description = description;
         this.name = name;
         this.difficulty = difficulty;
+        this.classe = "";
     }
 
     public int getPlayerId() {
@@ -72,6 +78,10 @@ public class Game {
 
     public void setOra_creazione(String ora_creazione) {
         this.ora_creazione = ora_creazione;
+    }
+
+    public String getClasse() {
+        return classe;
     }
 
 }
