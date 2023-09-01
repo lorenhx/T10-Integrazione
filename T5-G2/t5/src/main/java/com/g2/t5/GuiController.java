@@ -11,6 +11,7 @@ import com.g2.Model.ClassUT;
 import com.g2.Model.Game;
 import com.g2.Model.Player;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.FileSystemResource;
@@ -26,7 +27,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;  
+import java.util.Map;
 
 @CrossOrigin
 @Controller
@@ -52,7 +53,7 @@ public class GuiController {
 
     // @GetMapping("/login")
     // public String loginPage() {
-    //     return "login"; // Nome del template Thymeleaf per la pagina1.html
+    // return "login"; // Nome del template Thymeleaf per la pagina1.html
     // }
 
     @GetMapping("/main")
@@ -61,7 +62,9 @@ public class GuiController {
         // fileController.listFilesInFolder("/app/AUTName/AUTSourceCode");
         // int size = fileController.getClassSize();
 
-        ResponseEntity<List<ClassUT>> responseEntity = restTemplate.exchange("http://manvsclass-controller-1:8080/home", HttpMethod.GET, null, new ParameterizedTypeReference<List<ClassUT>>(){});
+        ResponseEntity<List<ClassUT>> responseEntity = restTemplate.exchange("http://manvsclass-controller-1:8080/home",
+                HttpMethod.GET, null, new ParameterizedTypeReference<List<ClassUT>>() {
+                });
 
         List<ClassUT> classes = responseEntity.getBody();
 
@@ -81,15 +84,16 @@ public class GuiController {
     }
 
     // @PostMapping("/sendVariable")
-    // public ResponseEntity<String> receiveVariableClasse(@RequestParam("myVariable") Integer myClassa,
-    //         @RequestParam("myVariable2") Integer myRobota) {
-    //     // Fai qualcosa con la variabile ricevuta
-    //     System.out.println("Variabile ricevuta: " + myClassa);
-    //     System.out.println("Variabile ricevuta: " + myRobota);
-    //     myClass = myClassa;
-    //     myRobot = myRobota;
-    //     // Restituisci una risposta al client (se necessario)
-    //     return ResponseEntity.ok("Dati ricevuti con successo");
+    // public ResponseEntity<String>
+    // receiveVariableClasse(@RequestParam("myVariable") Integer myClassa,
+    // @RequestParam("myVariable2") Integer myRobota) {
+    // // Fai qualcosa con la variabile ricevuta
+    // System.out.println("Variabile ricevuta: " + myClassa);
+    // System.out.println("Variabile ricevuta: " + myRobota);
+    // myClass = myClassa;
+    // myRobot = myRobota;
+    // // Restituisci una risposta al client (se necessario)
+    // return ResponseEntity.ok("Dati ricevuti con successo");
     // }
 
     @GetMapping("/report")
@@ -103,27 +107,30 @@ public class GuiController {
         // model.addAttribute("robot", valuerobot);
         return "report";
     }
-    
+
     // @PostMapping("/login-variabiles")
-    // public ResponseEntity<String> receiveLoginData(@RequestParam("var1") String username,
-    //         @RequestParam("var2") String password) {
- 
-    //     System.out.println("username : " + username);
-    //     System.out.println("password : " + password);
- 
-    //     p1.setUsername(username);
-    //     p1.setPassword(password);
- 
-    //     // Salva i valori in una variabile o esegui altre operazioni necessarie
-    //     if (com.g2.Interfaces.t2_3.verifyLogin(username, password)) {
-    //         return ResponseEntity.ok("Dati ricevuti con successo");
-    //     }
- 
-    //     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Si è verificato un errore interno");
+    // public ResponseEntity<String> receiveLoginData(@RequestParam("var1") String
+    // username,
+    // @RequestParam("var2") String password) {
+
+    // System.out.println("username : " + username);
+    // System.out.println("password : " + password);
+
+    // p1.setUsername(username);
+    // p1.setPassword(password);
+
+    // // Salva i valori in una variabile o esegui altre operazioni necessarie
+    // if (com.g2.Interfaces.t2_3.verifyLogin(username, password)) {
+    // return ResponseEntity.ok("Dati ricevuti con successo");
+    // }
+
+    // return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Si è
+    // verificato un errore interno");
     // }
 
     @PostMapping("/save-data")
-    public ResponseEntity<Integer> saveGame(@RequestParam("playerId") int playerId, @RequestParam("robot") String robot, @RequestParam("classe") String classe) {
+    public ResponseEntity<String> saveGame(@RequestParam("playerId") int playerId, @RequestParam("robot") String robot,
+            @RequestParam("classe") String classe) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         LocalTime oraCorrente = LocalTime.now();
         String oraFormattata = oraCorrente.format(formatter);
@@ -136,41 +143,43 @@ public class GuiController {
         // g.setRobot(robot);
         g.setData_creazione(LocalDate.now());
         g.setOra_creazione(oraFormattata);
-
+        g.setClasse(classe);
         // System.out.println(g.getUsername() + " " + g.getGameId());
 
         // globalID = g.getGameId();
 
-        Integer id = gameDataWriter.saveGame(g);
+        JSONObject ids = gameDataWriter.saveGame(g);
 
-        return ResponseEntity.ok(id);
+        return ResponseEntity.ok(ids.toString());
 
     }
 
     // @PostMapping("/download")
-    // public ResponseEntity<Resource> downloadFile(@RequestParam("elementId") String elementId) {
-    //     // Effettua la logica necessaria per ottenere il nome del file
-    //     // a partire dall'elementId ricevuto, ad esempio, recuperandolo dal database
-    //     System.out.println("elementId : " + elementId);
-    //     String filename = elementId;
-    //     System.out.println("filename : " + filename);
-    //     String basePath = "/app/AUTName/AUTSourceCode/";
-    //     String filePath = basePath + filename + ".java";
-    //     System.out.println("filePath : " + filePath);
-    //     Resource fileResource = new FileSystemResource(filePath);
+    // public ResponseEntity<Resource> downloadFile(@RequestParam("elementId")
+    // String elementId) {
+    // // Effettua la logica necessaria per ottenere il nome del file
+    // // a partire dall'elementId ricevuto, ad esempio, recuperandolo dal database
+    // System.out.println("elementId : " + elementId);
+    // String filename = elementId;
+    // System.out.println("filename : " + filename);
+    // String basePath = "/app/AUTName/AUTSourceCode/";
+    // String filePath = basePath + filename + ".java";
+    // System.out.println("filePath : " + filePath);
+    // Resource fileResource = new FileSystemResource(filePath);
 
-    //     HttpHeaders headers = new HttpHeaders();
-    //     headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename + ".java");
-    //     headers.add(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
+    // HttpHeaders headers = new HttpHeaders();
+    // headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" +
+    // filename + ".java");
+    // headers.add(HttpHeaders.CONTENT_TYPE, "application/octet-stream");
 
-    //     return ResponseEntity.ok()
-    //             .headers(headers)
-    //             .body(fileResource);
+    // return ResponseEntity.ok()
+    // .headers(headers)
+    // .body(fileResource);
     // }
 
     // @GetMapping("/change_password")
     // public String showChangePasswordPage() {
-    //     return "change_password";
+    // return "change_password";
     // }
 
     @GetMapping("/editor")
