@@ -730,7 +730,7 @@ public class NomeClasseTest {
         function processJaCoCoReport() {
           // Effettua una richiesta al tuo controller Spring per ottenere il file di output di JaCoCo
           $.ajax({
-            url: "http://localhost:80/getJaCoCoReport",
+            url: "http://localhost:8083/getJaCoCoReport",
             type: "GET",
             dataType: "html", //potrebbe essere anche giusto leggere da un file xml di report di JaCoCo
             success: function(reportContent) {
