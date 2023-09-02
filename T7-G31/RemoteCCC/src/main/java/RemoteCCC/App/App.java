@@ -140,14 +140,14 @@ public class App {
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line;
         while ((line = reader.readLine()) != null)
-            System.out.println("tasklist: " + line);
+            ret[0] += line;
         int exitCode = process.waitFor();
        
         // Legge il contenuto del buffer del terminale
-        InputStream inputStream = process.getInputStream();
-        byte[] buffer = new byte[inputStream.available()];
-        inputStream.read(buffer);
-        ret[0] = new String(buffer, StandardCharsets.UTF_8);
+        // InputStream inputStream = process.getInputStream();
+        // byte[] buffer = new byte[inputStream.available()];
+        // inputStream.read(buffer);
+        // ret[0] = new String(buffer, StandardCharsets.UTF_8);
         if (exitCode == 0) {
             System.out.println("Maven clean compile executed successfully.");
             return true;

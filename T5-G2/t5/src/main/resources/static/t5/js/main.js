@@ -113,30 +113,30 @@ function redirectToPagemain() {
 
 
 
-function redirectToPagemainlogin() {
+// function redirectToPagemainlogin() {
 
-  user = document.getElementById("username").value;
-  password = document.getElementById("password").value;
-if(user && password ){
-  alert("Login effettuato con successo");
+//   user = document.getElementById("username").value;
+//   password = document.getElementById("password").value;
+// if(user && password ){
+//   alert("Login effettuato con successo");
   
-  $.ajax({
-    url:'http://localhost:8082/login-variabiles',
-    type: 'POST',
-    data: { 
-      var1: user, 
-      var2: password
-    },
+//   $.ajax({
+//     url:'http://localhost:8082/login-variabiles',
+//     type: 'POST',
+//     data: { 
+//       var1: user, 
+//       var2: password
+//     },
 
-  })
+//   })
 
 
-  window.location.href = "/main";
-}
-else{
-  alert("Inserisci username e password");
-}
-}
+//   window.location.href = "/main";
+// }
+// else{
+//   alert("Inserisci username e password");
+// }
+// }
 
 function redirectToPageeditor() {
   $.ajax({
