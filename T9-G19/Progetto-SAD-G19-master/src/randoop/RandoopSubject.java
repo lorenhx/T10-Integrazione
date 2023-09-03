@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -22,7 +23,7 @@ public class RandoopSubject implements ISubject {
     private int cov;
     private int ex_cov;
     private int timelimit;
-    private static int max_iter = 1000;
+    private static int max_iter = 1;
     private int iter;
     private int sat;
     private static int max_sat = 10;
@@ -60,12 +61,12 @@ public class RandoopSubject implements ISubject {
 
         File file = new File("classes/"+ class_file.getName());
 
-        Path source = Path.of(class_file.getPath());
-        Path destination = Path.of(file.getPath());
+        Path source = Paths.get(class_file.getPath());
+        Path destination = Paths.get(file.getPath());
 
         Files.copy(source, destination,  StandardCopyOption.REPLACE_EXISTING);
 
-        File director = new File(".\\FolderTree\\" + class_file.getName().subSequence(0,class_file.getName().length()-5) + "\\RobotTest\\RandoopTest\\");
+        File director = new File("./FolderTree/" + class_file.getName().subSequence(0,class_file.getName().length()-5) + "/RobotTest/RandoopTest/");
 
         director.mkdir();
 
@@ -86,16 +87,16 @@ public class RandoopSubject implements ISubject {
                 System.out.println("new level-->"+" coverage: "+cov);
                 File directory_level;
                 if(livello >= 10) {
-                    directory_level = new File(".\\FolderTree\\" + class_file.getName().subSequence(0,class_file.getName().length()-5) + "\\RobotTest\\RandoopTest\\" + livello +"Level");
+                    directory_level = new File("./FolderTree/" + class_file.getName().subSequence(0,class_file.getName().length()-5) + "/RobotTest/RandoopTest/" + livello +"Level");
                 } else {
-                    directory_level = new File(".\\FolderTree\\" + class_file.getName().subSequence(0,class_file.getName().length()-5) + "\\RobotTest\\RandoopTest\\" + "0"+livello +"Level");
+                    directory_level = new File("./FolderTree/" + class_file.getName().subSequence(0,class_file.getName().length()-5) + "/RobotTest/RandoopTest/" + "0"+livello +"Level");
 
                 }
                 directory_level.mkdir();
 
 
                 for(int i=0; i<=iter; i++) {
-                    File sourceFile = new File(".\\FolderTree\\"+class_file.getName().subSequence(0,class_file.getName().length()-5) + "\\RobotTest\\RandoopTest\\"+class_file.getName().subSequence(0,class_file.getName().length()-5)+"-"+i+"-dati_di_copertura\\"+class_file.getName().subSequence(0,class_file.getName().length()-5)+"_Test");
+                    File sourceFile = new File("./FolderTree/"+class_file.getName().subSequence(0,class_file.getName().length()-5) + "/RobotTest/RandoopTest/"+class_file.getName().subSequence(0,class_file.getName().length()-5)+"-"+i+"-dati_di_copertura/"+class_file.getName().subSequence(0,class_file.getName().length()-5)+"_Test");
 
                     File[] files = sourceFile.listFiles();
 

@@ -30,14 +30,14 @@ public class RunRandoop {
         
 		try {
 
-			zip_ritorno = (".\\FolderTree\\"+name+"\\RobotTest\\RandoopTest\\"+name+"-"+iter+"-dati_di_copertura\\"+name+"_Test.zip");
-			cartella_ritorno = (".\\FolderTree\\"+name+"\\RobotTest\\RandoopTest\\"+name+"-"+iter+"-dati_di_copertura\\"+name+"_Test");
+			zip_ritorno = ("./FolderTree/"+name+"/RobotTest/RandoopTest/"+name+"-"+iter+"-dati_di_copertura/"+name+"_Test.zip");
+			cartella_ritorno = ("./FolderTree/"+name+"/RobotTest/RandoopTest/"+name+"-"+iter+"-dati_di_copertura/"+name+"_Test");
 			
-			xml_ritorno = (".\\FolderTree\\"+name+"\\RobotTest\\RandoopTest\\"+name+"-"+iter+"-dati_di_copertura\\coveragetot.xml");
+			xml_ritorno = ("./FolderTree/"+name+"/RobotTest/RandoopTest/"+name+"-"+iter+"-dati_di_copertura/coveragetot.xml");
 			
 			File f = new File(zip_ritorno);
 
-			Process p=Runtime.getRuntime().exec("cmd /c start \"\" robot.bat "+" "+name+" "+timelimit+" "+iter+" "+seed+" "+vecchioiter );
+			Process p=Runtime.getRuntime().exec("bash robot.sh "+" "+name+" "+timelimit+" "+iter+" "+seed+" "+vecchioiter );
 			
 			while(!f.exists())
 				Thread.sleep(100);
