@@ -63,8 +63,12 @@ public class MyController {
             byte[] classUnderTest = restTemplate.getForObject(url, byte[].class);
 
             JSONObject resp = new JSONObject();
-            resp.put("class", new String(classUnderTest));
+            String ut = new String(classUnderTest);
+            // Remove BOM Character
+            if(ut.startsWith("\uFEFF")) ut = ut.substring(1);
 
+            resp.put("class", ut);
+            
             // Restituisci una risposta di successo
             return new ResponseEntity<>(resp.toString(), HttpStatus.OK);
         } catch (Exception e) {
@@ -98,10 +102,10 @@ public class MyController {
             String responseBody = EntityUtils.toString(entity);
             JSONObject responseObj = new JSONObject(responseBody);
 
-            String out_string = responseObj.getString("outputCompile");
+            String out_string = responseObj.getString("outCompile");
 
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_XML);
+            headers.setContentType(MediaType.TEXT_PLAIN);
             // headers.setContentDisposition(ContentDisposition.attachment().filename("index.html").build());
 
             return new ResponseEntity<>(out_string, headers, HttpStatus.OK);

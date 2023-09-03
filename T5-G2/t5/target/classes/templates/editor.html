@@ -599,26 +599,29 @@ public class NomeClasseTest {
         compileButton.addEventListener("click", function() {
           // Logica da eseguire quando il pulsante viene cliccato
           // Ad esempio, esegui una chiamata AJAX al tuo controller Spring per inviare i dati
-          var requestData = {
-            testingClassName: "TestClass.java",
-            testingClassCode: getEditorContent(), // Assumi che tu abbia una funzione "getEditorContent" per ottenere il contenuto dell'editor
-            underTestClassName: nameCUT,
-            underTestClassCode: getCUTContent()
-          };
+          var formData = new FormData();
+          formData.append("testingClassName", "NomeClasseTest.java");
+          formData.append("testingClassCode", editor.getValue());
+          formData.append("underTestClassName", localStorage.getItem("classe")+".java");
+          formData.append("underTestClassCode", sidebarEditor.getValue());
 
         // Esegui la chiamata AJAX al tuo controller Spring
         // Utilizza la libreria jQuery per semplificare la gestione delle richieste AJAX
         $.ajax({
-          url: "http://localhost:80/sendInfo", //URL del controller Spring
+          url: "http://localhost:8083/sendInfo", //URL del controller Spring
           type: "POST",
-          data: JSON.stringify(requestData),
-          contentType: "application/json",
+          data: formData,
+          processData: false,
+          contentType: false,
+          dataType: "text",
           success: function(response) {
             // Logica da eseguire in caso di successo
+            consoleArea.setValue(response);
             console.log("Richiesta inviata con successo. Risposta del server:", response);
           },
           error: function(xhr, status, error) {
             // Logica da eseguire in caso di errore
+            alert("Si è verificato un errore!");
             console.log("Errore durante l'invio della richiesta:", error);
           }
         });
