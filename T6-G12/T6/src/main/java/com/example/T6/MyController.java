@@ -1,6 +1,7 @@
 package com.example.T6;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -63,7 +64,11 @@ public class MyController {
             byte[] classUnderTest = restTemplate.getForObject(url, byte[].class);
 
             JSONObject resp = new JSONObject();
-            resp.put("class", new String(classUnderTest));
+            String ut = new String(classUnderTest);
+            // Remove BOM Character
+            if(ut.startsWith("\uFEFF")) ut = ut.substring(1);
+
+            resp.put("class", ut);
 
             // Restituisci una risposta di successo
             return new ResponseEntity<>(resp.toString(), HttpStatus.OK);

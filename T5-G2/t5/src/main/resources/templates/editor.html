@@ -735,7 +735,7 @@ public class NomeClasseTest {
           formData.append("testingClassCode", editor.getValue());
           formData.append("underTestClassName", localStorage.getItem("classe")+".java");
           formData.append("underTestClassCode", sidebarEditor.getValue());
-          
+
           $.ajax({
             url: "http://localhost:8083/getJaCoCoReport",
             type: "POST",
@@ -749,6 +749,7 @@ public class NomeClasseTest {
               highlightCodeCoverage(reportContent);
             },
             error: function() {
+              alert("Si è verificato un errore. Assicurati prima che la compilazione vada a buon fine!");
               console.log("Errore durante il recupero del file di output di JaCoCo.");
             }
           });
