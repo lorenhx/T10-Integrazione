@@ -13,7 +13,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
-import org.apache.hc.core5.http.ContentType;
+import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,10 +60,10 @@ public class MyController {
             // Esegui la richiesta HTTP al servizio esterno per ottenere il file
             // ClassUnderTest.java
             String url = "http://manvsclass-controller-1:8080/downloadFile/" + nomeCUT;
-            String classUnderTest = restTemplate.getForObject(url, String.class);
+            byte[] classUnderTest = restTemplate.getForObject(url, byte[].class);
 
             JSONObject resp = new JSONObject();
-            resp.put("class", classUnderTest);
+            resp.put("class", new String(classUnderTest));
 
             // Restituisci una risposta di successo
             return new ResponseEntity<>(resp.toString(), HttpStatus.OK);
@@ -185,12 +185,23 @@ public class MyController {
         }
     }
 
-    @GetMapping("/getJaCoCoReport")
-    public ResponseEntity<String> getJaCoCoReport() {
+    @PostMapping("/getJaCoCoReport")
+    public ResponseEntity<String> getJaCoCoReport(HttpServletRequest request) {
         try {
-            HttpGet httpGet = new HttpGet("http://localhost:1234/compile-and-codecoverage");
+            HttpPost httpPost = new HttpPost("http://remoteccc-app-1:1234/compile-and-codecoverage");
 
-            HttpResponse response = httpClient.execute(httpGet);
+            JSONObject obj = new JSONObject();
+
+            obj.put("testingClassName", request.getParameter("testingClassName"));
+            obj.put("testingClassCode", request.getParameter("testingClassCode"));
+            obj.put("underTestClassName", request.getParameter("underTestClassName"));
+            obj.put("underTestClassCode", request.getParameter("underTestClassCode"));
+
+            StringEntity jsonEntity = new StringEntity(obj.toString(), ContentType.APPLICATION_JSON);
+
+            httpPost.setEntity(jsonEntity);
+
+            HttpResponse response = httpClient.execute(httpPost);
             HttpEntity entity = response.getEntity();
 
             String responseBody = EntityUtils.toString(entity);
@@ -204,6 +215,7 @@ public class MyController {
 
             return new ResponseEntity<>(xml_string, headers, HttpStatus.OK);
         } catch (IOException e) {
+            System.err.println(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -227,10 +239,10 @@ public class MyController {
                     .addTextBody("idTurno", idTurno)
                     .addTextBody("robotScelto", robotScelto)
                     .addTextBody("difficolta", difficolta)
-                    .addTextBody("playerTestClass", playerTestClass) // Aggiungi la classe Java come parte del corpo
+                    .addTextBody("playerTestClass", playerTestClass); // Aggiungi la classe Java come parte del corpo
                                                                      // della richiesta
-                    .addBinaryBody("file", file.getBytes(), ContentType.APPLICATION_OCTET_STREAM,
-                            file.getOriginalFilename());
+                    // .addBinaryBody("file", file.getBytes(), ContentType.APPLICATION_OCTET_STREAM,
+                    //        file.getOriginalFilename());
             httpPost.setEntity((HttpEntity) entityBuilder.build());
             // Esecuzione della richiesta HTTP al servizio di destinazione
             HttpResponse targetServiceResponse = httpClient.execute(httpPost);

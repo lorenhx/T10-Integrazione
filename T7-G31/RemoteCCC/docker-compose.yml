@@ -6,3 +6,9 @@ services:
     restart: always
     ports:
       - 1234:1234
+    networks:
+      - global-network
+
+networks:
+  global-network:
+    external: true

@@ -80,7 +80,7 @@ public class GameDataWriter {
             obj.put("description", game.getDescription());
             obj.put("startedAt", time);
 
-            JSONArray playersArray = new JSONArray();
+            JSONArray playersArray = new JSONArray(); 
             playersArray.put(String.valueOf(game.getPlayerId()));
 
             obj.put("players", playersArray);

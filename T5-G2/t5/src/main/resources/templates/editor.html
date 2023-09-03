@@ -369,30 +369,30 @@
           <button id="coverageButton" class="coverage-button" title="Run with JaCoCo"></button>
         </div>
         <textarea id="editor" name="editor">
-import org.junit.Before;
-import org.junit.After;
-import org.junit.BeforeClass;
-import org.junit.AfterClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class NomeClasseTest {
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() {
         // Eseguito una volta prima dell'inizio dei test nella classe
         // Inizializza risorse condivise o esegui altre operazioni di setup
     }
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() {
         // Eseguito una volta alla fine di tutti i test nella classe
         // Effettua la pulizia delle risorse condivise o esegui altre operazioni di teardown
     }
-    @Before
+    @BeforeEach
     public void setUp() {
         // Eseguito prima di ogni metodo di test
         // Preparazione dei dati di input specifici per il test
     }
-    @After
+    @AfterEach
     public void tearDown() {
         // Eseguito dopo ogni metodo di test
         // Pulizia delle risorse o ripristino dello stato iniziale
@@ -575,6 +575,7 @@ public class NomeClasseTest {
             difficoltaElement.textContent = "Livello: " + difficolta;
             modal2Content.appendChild(difficoltaElement);
             // Aggiorna il contenuto dell'editor laterale con il contenuto ricevuto
+            console.log(JSON.parse(response).class);
             sidebarEditor.setValue(JSON.parse(response).class);
           },    
           error: function() {
@@ -729,11 +730,21 @@ public class NomeClasseTest {
         coverageButton.addEventListener("click", processJaCoCoReport);
         function processJaCoCoReport() {
           // Effettua una richiesta al tuo controller Spring per ottenere il file di output di JaCoCo
+          var formData = new FormData();
+          formData.append("testingClassName", "NomeClasseTest.java");
+          formData.append("testingClassCode", editor.getValue());
+          formData.append("underTestClassName", localStorage.getItem("classe")+".java");
+          formData.append("underTestClassCode", sidebarEditor.getValue());
+          
           $.ajax({
             url: "http://localhost:8083/getJaCoCoReport",
-            type: "GET",
-            dataType: "html", //potrebbe essere anche giusto leggere da un file xml di report di JaCoCo
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: "xml", //potrebbe essere anche giusto leggere da un file xml di report di JaCoCo
             success: function(reportContent) {
+              console.log(reportContent);
               // Una volta ricevuto il file di output di JaCoCo, elabora il contenuto
               highlightCodeCoverage(reportContent);
             },
@@ -746,20 +757,32 @@ public class NomeClasseTest {
           // Analizza il contenuto del file di output di JaCoCo per individuare le righe coperte, non coperte e parzialmente coperte
           // Applica lo stile appropriato alle righe del tuo editor
 
-          var coveredLines = [/* array di numeri di riga coperti */];
-          var uncoveredLines = [/* array di numeri di riga non coperti */];
-          var partiallyCoveredLines = [/* array di numeri di riga parzialmente coperti */];
+          var coveredLines = [];
+          var uncoveredLines = [];
+          var partiallyCoveredLines = [];
+
+          reportContent.querySelectorAll("line").forEach(function(line) {
+            if(line.getAttribute("mi") == 0) coveredLines.push(line.getAttribute("nr"));
+            else if(line.getAttribute("cb") / (line.getAttribute("mb") + line.getAttribute("cb")) == (2/4)) partiallyCoveredLines.push(line.getAttribute("nr"));
+            else uncoveredLines.push(line.getAttribute("nr"));
+          });
 
           coveredLines.forEach(function(lineNumber) {
-            editor.addLineClass(lineNumber - 1, "background", "covered-line");
+            sidebarEditor.removeLineClass(lineNumber - 2, "background", "uncovered-line");
+            sidebarEditor.removeLineClass(lineNumber - 2, "background", "partially-covered-line");
+            sidebarEditor.addLineClass(lineNumber - 2, "background", "covered-line");
           });
 
           uncoveredLines.forEach(function(lineNumber) {
-            editor.addLineClass(lineNumber - 1, "background", "uncovered-line");
+            sidebarEditor.removeLineClass(lineNumber - 2, "background", "covered-line");
+            sidebarEditor.removeLineClass(lineNumber - 2, "background", "partially-covered-line");
+            sidebarEditor.addLineClass(lineNumber - 2, "background", "uncovered-line");
           });
 
           partiallyCoveredLines.forEach(function(lineNumber) {
-            editor.addLineClass(lineNumber - 1, "background", "partially-covered-line");
+            sidebarEditor.removeLineClass(lineNumber - 2, "background", "uncovered-line");
+            sidebarEditor.removeLineClass(lineNumber - 2, "background", "covered-line");
+            sidebarEditor.addLineClass(lineNumber - 2, "background", "partially-covered-line");
           });
         }
         
