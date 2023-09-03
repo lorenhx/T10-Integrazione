@@ -42,6 +42,7 @@ import com.groom.manvsclass.model.repository.SearchRepositoryImpl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@CrossOrigin
 @Controller
 public class HomeController {
 	
