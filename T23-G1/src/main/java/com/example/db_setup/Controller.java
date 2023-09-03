@@ -35,6 +35,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -86,9 +87,9 @@ public class Controller {
                                             @RequestParam("password") String password,
                                             @RequestParam("check_password") String check_password,
                                             @RequestParam("studies") Studies studies,
-                                            @RequestParam("g-recaptcha-response") String gRecaptchaResponse, HttpServletRequest request) {
+                                            @RequestParam("g-recaptcha-response") String gRecaptchaResponse, @CookieValue(name = "jwt", required = false) String jwt, HttpServletRequest request) {
         
-        if(isJwtCookieValid(request)) {
+        if(isJwtValid(jwt)) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Already logged in");
         }
 
@@ -168,9 +169,9 @@ public class Controller {
     // Autenticazione
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestParam("email") String email,
-                                        @RequestParam("password") String password, HttpServletRequest request, HttpServletResponse response) {
+                                        @RequestParam("password") String password, @CookieValue(name = "jwt", required = false) String jwt, HttpServletRequest request, HttpServletResponse response) {
 
-        if(isJwtCookieValid(request)) {
+        if(isJwtValid(jwt)) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Already logged in");
         }
 
@@ -249,8 +250,8 @@ public class Controller {
     
     //Recupera Password
     @PostMapping("/password_reset")
-    public ResponseEntity<String> resetPassword(@RequestParam("email") String email, HttpServletRequest request) {
-        if(isJwtCookieValid(request)) {
+    public ResponseEntity<String> resetPassword(@RequestParam("email") String email, @CookieValue(name = "jwt", required = false) String jwt, HttpServletRequest request) {
+        if(isJwtValid(jwt)) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Already logged in");
         }
 
@@ -277,9 +278,9 @@ public class Controller {
     public ResponseEntity<String> changePassword(@RequestParam("email") String email,
                                                 @RequestParam("token") String resetToken,
                                                 @RequestParam("newPassword") String newPassword,
-                                                @RequestParam("confirmPassword") String confirmPassword, HttpServletRequest request) {
+                                                @RequestParam("confirmPassword") String confirmPassword, @CookieValue(name = "jwt", required = false) String jwt, HttpServletRequest request) {
 
-        if(isJwtCookieValid(request)) {
+        if(isJwtValid(jwt)) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Already logged in");
         }
 
@@ -334,62 +335,60 @@ public class Controller {
 
     /* GET PER LE VIEW */
 
-    public boolean isJwtCookieValid(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
+    public boolean isJwtValid(String jwt) {
+        try {
+            Claims c = Jwts.parser().setSigningKey("mySecretKey").parseClaimsJws(jwt).getBody();
 
-        if(cookies != null) {
-            List<Cookie> jwtCookies = Arrays.stream(cookies)
-                .filter(cookie->cookie.getName().equals("jwt")).collect(Collectors.toList());
-                
-            if(jwtCookies != null && jwtCookies.size() > 0) {
-                try {
-                    Claims c = Jwts.parser().setSigningKey("mySecretKey").parseClaimsJws(jwtCookies.get(0).getValue()).getBody();
-
-                    if((new Date()).before(c.getExpiration())) {
-                        return true;
-                    }
-                } catch(Exception e) {
-                    System.err.println(e);
-                }
+            if((new Date()).before(c.getExpiration())) {
+                return true;
             }
+        } catch(Exception e) {
+            System.err.println(e);
         }
-        
+
         return false;
     }
 
+    @PostMapping("/validateToken")
+    public ResponseEntity<Boolean> checkValidityToken( @RequestParam("jwt") String jwt) {
+        if(isJwtValid(jwt)) return ResponseEntity.ok(true);
+
+        return ResponseEntity.ok(false);
+    }
+
     @GetMapping("/register")
-    public ModelAndView showRegistrationForm(HttpServletRequest request) {
-        if(isJwtCookieValid(request)) return new ModelAndView("redirect:http://localhost/main"); 
+    public ModelAndView showRegistrationForm(HttpServletRequest request, @CookieValue(name = "jwt", required = false) String jwt) {
+        if(isJwtValid(jwt)) return new ModelAndView("redirect:http://localhost/main"); 
 
         return new ModelAndView("register");
     }
 
     @GetMapping("/login")
-    public ModelAndView showLoginForm(HttpServletRequest request) {
-        if(isJwtCookieValid(request)) return new ModelAndView("redirect:http://localhost/main"); 
+    public ModelAndView showLoginForm(HttpServletRequest request, @CookieValue(name = "jwt", required = false) String jwt) {
+        if(isJwtValid(jwt)) return new ModelAndView("redirect:http://localhost/main"); 
 
         return new ModelAndView("login");
     }
 
     
     @GetMapping("/password_reset")
-    public ModelAndView showResetForm(HttpServletRequest request) {
-        if(isJwtCookieValid(request)) return new ModelAndView("redirect:http://localhost/main"); 
+    public ModelAndView showResetForm(HttpServletRequest request, @CookieValue(name = "jwt", required = false) String jwt) {
+        if(isJwtValid(jwt)) return new ModelAndView("redirect:http://localhost/main"); 
         
         return new ModelAndView("password_reset");
     }
 
     
     @GetMapping("/password_change")
-    public ModelAndView showChangeForm(HttpServletRequest request) {
-        if(isJwtCookieValid(request)) return new ModelAndView("redirect:http://localhost/main"); 
+    public ModelAndView showChangeForm(HttpServletRequest request, @CookieValue(name = "jwt", required = false) String jwt) {
+        if(isJwtValid(jwt)) return new ModelAndView("redirect:http://localhost/main"); 
 
         return new ModelAndView("password_change");
     }
 
     @GetMapping("/mail_register")
-    public ModelAndView showMailForm(HttpServletRequest request) {
-        if(isJwtCookieValid(request)) return new ModelAndView("redirect:http://localhost/main"); 
+    public ModelAndView showMailForm(HttpServletRequest request, @CookieValue(name = "jwt", required = false) String jwt) {
+        if(isJwtValid(jwt)) return new ModelAndView("redirect:http://localhost/main"); 
 
         return new ModelAndView("mail_register");
     }

@@ -2,6 +2,9 @@ package com.g2.t5;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -11,6 +14,8 @@ import com.g2.Model.ClassUT;
 import com.g2.Model.Game;
 import com.g2.Model.Player;
 
+import jakarta.servlet.http.Cookie;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -18,6 +23,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -25,9 +31,11 @@ import org.springframework.http.HttpStatus;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @CrossOrigin
 @Controller
@@ -57,7 +65,13 @@ public class GuiController {
     // }
 
     @GetMapping("/main")
-    public String GUIController(Model model) {
+    public String GUIController(Model model, @CookieValue(name = "jwt", required = false) String jwt) {
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<String, String>();
+        formData.add("jwt", jwt);
+
+        Boolean isAuthenticated = restTemplate.postForObject("http://t23-g1-app-1:8080/validateToken", formData, Boolean.class);
+
+        if(isAuthenticated == null || !isAuthenticated) return "redirect:/login";
 
         // fileController.listFilesInFolder("/app/AUTName/AUTSourceCode");
         // int size = fileController.getClassSize();
@@ -97,7 +111,13 @@ public class GuiController {
     // }
 
     @GetMapping("/report")
-    public String reportPage(Model model) {
+    public String reportPage(Model model, @CookieValue(name = "jwt", required = false) String jwt) {
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<String, String>();
+        formData.add("jwt", jwt);
+
+        Boolean isAuthenticated = restTemplate.postForObject("http://t23-g1-app-1:8080/validateToken", formData, Boolean.class);
+
+        if(isAuthenticated == null || !isAuthenticated) return "redirect:/login";
         // valueclass = hashMap.get(myClass);
         // valuerobot = hashMap2.get(myRobot);
 
@@ -185,7 +205,13 @@ public class GuiController {
     // }
 
     @GetMapping("/editor")
-    public String editorPage(Model model) {
+    public String editorPage(Model model, @CookieValue(name = "jwt", required = false) String jwt) {
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<String, String>();
+        formData.add("jwt", jwt);
+
+        Boolean isAuthenticated = restTemplate.postForObject("http://t23-g1-app-1:8080/validateToken", formData, Boolean.class);
+
+        if(isAuthenticated == null || !isAuthenticated) return "redirect:/login";
         // model.addAttribute("robot", valuerobot);
         // model.addAttribute("classe", valueclass);
 

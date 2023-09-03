@@ -460,6 +460,7 @@ public class NomeClasseTest {
         lineNumbers: true,
         smartIndent: true,
         electricChars: true,
+        readOnly: true,
         autoCloseBrackets: true,
         matchBrackets: true,
         disableInput:true,
@@ -470,6 +471,7 @@ public class NomeClasseTest {
         lineWrapping:true,
         theme: "lucario",
         electricChars: true,
+        readOnly: true,
         disableInput:true,
         autofocus: true
       });
@@ -478,6 +480,7 @@ public class NomeClasseTest {
         lineWrapping: true,
         theme: "lucario",
         electricChars: true,
+        readOnly: true,
         disableInput: true,
         autofocus: true
     });
@@ -538,6 +541,8 @@ public class NomeClasseTest {
         var nameCUT= localStorage.getItem("classe");
         var robotScelto = localStorage.getItem("robot");
         var difficolta = "easy";
+
+        if(idUtente == null || idPartita == null || idTurno == null || nameCUT == null || robotScelto == null) window.location.href = "/main";
 
         $.ajax({
           url: "http://localhost:8083/receiveClassUnderTest",

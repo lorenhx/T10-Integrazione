@@ -45,8 +45,13 @@
       </div>
   </div>
   <script>
-    document.getElementById("class").innerText = localStorage.getItem("classe");
-    document.getElementById("robot").innerText = localStorage.getItem("robot");
+    var nameCUT= localStorage.getItem("classe");
+    var robotScelto = localStorage.getItem("robot");
+
+    if(nameCUT == null || robotScelto == null) window.location.href = "/main";
+
+    document.getElementById("class").innerText = nameCUT;
+    document.getElementById("robot").innerText = robotScelto;
   // Recupera le variabili dalla memoria locale
   // var username = localStorage.getItem("username");
 

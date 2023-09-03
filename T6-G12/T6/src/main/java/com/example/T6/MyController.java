@@ -68,7 +68,7 @@ public class MyController {
             if(ut.startsWith("\uFEFF")) ut = ut.substring(1);
 
             resp.put("class", ut);
-            
+
             // Restituisci una risposta di successo
             return new ResponseEntity<>(resp.toString(), HttpStatus.OK);
         } catch (Exception e) {
@@ -120,42 +120,42 @@ public class MyController {
         return Files.readAllBytes(path);
     }
 
-    @PostMapping("/getResultXml") // COMPILA IL CODICE DELL'UTENTE E RITORNA IL FILE XML DI JACOCO CON LA COVERAGE
-    public String handleGetResultXmlRequest() {
-        // try {
-        //     // Esegui la richiesta HTTP al servizio di destinazione
-        //     HttpPost httpPost = new HttpPost("URL_DEL_SERVIZIO_DESTINAZIONE");
-        //     JSONObject obj = new JSONObject();
+    // @PostMapping("/getResultXml")
+    // public String handleGetResultXmlRequest() {
+    //     // try {
+    //     //     // Esegui la richiesta HTTP al servizio di destinazione
+    //     //     HttpPost httpPost = new HttpPost("URL_DEL_SERVIZIO_DESTINAZIONE");
+    //     //     JSONObject obj = new JSONObject();
 
-        //     obj.put("testingClassName", request.getParameter("testingClassName"));
-        //     obj.put("testingClassCode", request.getParameter("testingClassCode"));
-        //     obj.put("underTestClassName", request.getParameter("underTestClassName"));
-        //     obj.put("underTestClassCode", request.getParameter("underTestClassCode"));
-        //     StringEntity jsonEntity = new StringEntity(obj.toString(), ContentType.APPLICATION_JSON);
+    //     //     obj.put("testingClassName", request.getParameter("testingClassName"));
+    //     //     obj.put("testingClassCode", request.getParameter("testingClassCode"));
+    //     //     obj.put("underTestClassName", request.getParameter("underTestClassName"));
+    //     //     obj.put("underTestClassCode", request.getParameter("underTestClassCode"));
+    //     //     StringEntity jsonEntity = new StringEntity(obj.toString(), ContentType.APPLICATION_JSON);
 
-        //     httpPost.setEntity(jsonEntity);
-        //     HttpResponse targetServiceResponse = httpClient.execute(httpPost);
+    //     //     httpPost.setEntity(jsonEntity);
+    //     //     HttpResponse targetServiceResponse = httpClient.execute(httpPost);
 
-        //     // Verifica lo stato della risposta
-        //     int statusCode = targetServiceResponse.getStatusLine().getStatusCode();
-        //     if (statusCode == HttpStatus.OK.value()) {
-        //         // Leggi il contenuto del file XML dalla risposta
-        //         HttpEntity entity = targetServiceResponse.getEntity();
-        //         String compileContent = EntityUtils.toString(entity);
+    //     //     // Verifica lo stato della risposta
+    //     //     int statusCode = targetServiceResponse.getStatusLine().getStatusCode();
+    //     //     if (statusCode == HttpStatus.OK.value()) {
+    //     //         // Leggi il contenuto del file XML dalla risposta
+    //     //         HttpEntity entity = targetServiceResponse.getEntity();
+    //     //         String compileContent = EntityUtils.toString(entity);
 
-        //         String responseBody = EntityUtils.toString(entity);
-        //         JSONObject responseObj = new JSONObject(responseBody);
-        //         // Restituisci il contenuto del file XML come risposta al client
-        //         return xmlContent;
-        //     } else {
-        //         // Restituisci un messaggio di errore al client
-        //         return "Errore durante il recupero del file XML.";
-        //     }
-        // } catch (Exception e) {
-        //     // Gestisci eventuali errori e restituisci un messaggio di errore al client
-        //     return "Si è verificato un errore durante la richiesta del file XML.";
-        // }
-    }
+    //     //         String responseBody = EntityUtils.toString(entity);
+    //     //         JSONObject responseObj = new JSONObject(responseBody);
+    //     //         // Restituisci il contenuto del file XML come risposta al client
+    //     //         return xmlContent;
+    //     //     } else {
+    //     //         // Restituisci un messaggio di errore al client
+    //     //         return "Errore durante il recupero del file XML.";
+    //     //     }
+    //     // } catch (Exception e) {
+    //     //     // Gestisci eventuali errori e restituisci un messaggio di errore al client
+    //     //     return "Si è verificato un errore durante la richiesta del file XML.";
+    //     // }
+    // }
 
     // FUNZIONE CHE DOVREBBE RICEVERE I RISULTATI DEI ROBOT
     @GetMapping("/getResultRobot") // NON ESISTE NESSUN INTERFACCIA VERSO I COMPILATORI DEI ROBOT EVOSUITE E
@@ -245,8 +245,8 @@ public class MyController {
                     // .addBinaryBody("file", file.getBytes(), ContentType.APPLICATION_OCTET_STREAM,
                     //        file.getOriginalFilename());
                                                                       
-            zione della richiesta HTTP al servizio di destinazione
-            on tServiceResponse = httpClient.execute(httpPost);
+            // Esecuzione della richiesta HTTP al servizio di destinazione
+            HttpResponse targetServiceResponse = httpClient.execute(httpPost);
             // Restituisci una risposta di successo
             return ResponseEntity.ok("Dati, file e classe Java inviati con successo");
         } catch (Exception e) {

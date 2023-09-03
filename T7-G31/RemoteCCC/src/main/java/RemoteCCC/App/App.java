@@ -140,7 +140,7 @@ public class App {
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line;
         while ((line = reader.readLine()) != null)
-            ret[0] += line;
+            ret[0] += line += "\n";
         int exitCode = process.waitFor();
        
         // Legge il contenuto del buffer del terminale
