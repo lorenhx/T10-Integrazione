@@ -79,48 +79,35 @@ public class MyController {
 
     // questa è la parte in cui interagiamo con T7
     @PostMapping("/sendInfo") // COMPILA IL CODICE DELL'UTENTE E RESTITUISCE OUTPUT DI COMPILAZIONE CON MVN
-    public void handleSendInfoRequest(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<String> handleSendInfoRequest(HttpServletRequest request) {
         try {
-            // Leggi il contenuto dei file inviati
-            String testingClassName = request.getParameter("testingClassName");
-            String testingClassCode = request.getParameter("testingClassCode");
-            String underTestClassName = request.getParameter("underTestClassName");
-            String underTestClassCode = request.getParameter("underTestClassCode");
+            HttpPost httpPost = new HttpPost("http://remoteccc-app-1:1234/compile-and-codecoverage");
+            JSONObject obj = new JSONObject();
+            obj.put("testingClassName", request.getParameter("testingClassName"));
+            obj.put("testingClassCode", request.getParameter("testingClassCode"));
+            obj.put("underTestClassName", request.getParameter("underTestClassName"));
+            obj.put("underTestClassCode", request.getParameter("underTestClassCode"));
 
-            // Esegui le operazioni necessarie con i dati ricevuti
+            StringEntity jsonEntity = new StringEntity(obj.toString(), ContentType.APPLICATION_JSON);
 
-            // Esegui la richiesta HTTP al servizio di destinazione
-            HttpPost httpPost = new HttpPost("URL_DEL_SERVIZIO_COMPILEANDCOVERAGE");
+            httpPost.setEntity(jsonEntity);
 
-            // Aggiungi i dati dei file alla richiesta
-            MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create()
-                    .addTextBody("testingClassName", testingClassName)
-                    .addTextBody("testingClassCode", testingClassCode)
-                    .addTextBody("underTestClassName", underTestClassName)
-                    .addTextBody("underTestClassCode", underTestClassCode)
-                    .addBinaryBody("file1", getFileBytes("path/to/file1.txt"))
-                    .addBinaryBody("file2", getFileBytes("path/to/file2.txt"));
+            HttpResponse response = httpClient.execute(httpPost);
+            HttpEntity entity = response.getEntity();
 
-            HttpEntity entity = (HttpEntity) entityBuilder.build();
-            httpPost.setEntity(entity);
+            String responseBody = EntityUtils.toString(entity);
+            JSONObject responseObj = new JSONObject(responseBody);
 
-            // Esegui la richiesta e ottieni la risposta
-            HttpResponse httpResponse = httpClient.execute(httpPost);
-            HttpEntity responseEntity = httpResponse.getEntity();
+            String out_string = responseObj.getString("outputCompile");
 
-            // Leggi la risposta come stringa
-            String responseBody = EntityUtils.toString(responseEntity);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_XML);
+            // headers.setContentDisposition(ContentDisposition.attachment().filename("index.html").build());
 
-            // Imposta l'intestazione della risposta
-            response.setStatus(HttpStatus.OK.value());
-            response.setContentType(MediaType.TEXT_PLAIN_VALUE);
-            response.setCharacterEncoding("UTF-8");
-
-            // Scrivi la risposta nel corpo della risposta
-            response.getWriter().write(responseBody);
+            return new ResponseEntity<>(out_string, headers, HttpStatus.OK);
         } catch (IOException e) {
-            // Gestisci l'eccezione o restituisci un errore appropriato
-            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            System.err.println(e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -129,31 +116,41 @@ public class MyController {
         return Files.readAllBytes(path);
     }
 
-    @GetMapping("/getResultXml") // COMPILA IL CODICE DELL'UTENTE E RITORNA IL FILE XML DI JACOCO CON LA COVERAGE
+    @PostMapping("/getResultXml") // COMPILA IL CODICE DELL'UTENTE E RITORNA IL FILE XML DI JACOCO CON LA COVERAGE
     public String handleGetResultXmlRequest() {
-        try {
-            // Esegui la richiesta HTTP al servizio di destinazione
-            HttpGet httpGet = new HttpGet("URL_DEL_SERVIZIO_DESTINAZIONE");
+        // try {
+        //     // Esegui la richiesta HTTP al servizio di destinazione
+        //     HttpPost httpPost = new HttpPost("URL_DEL_SERVIZIO_DESTINAZIONE");
+        //     JSONObject obj = new JSONObject();
 
-            HttpResponse targetServiceResponse = httpClient.execute(httpGet);
+        //     obj.put("testingClassName", request.getParameter("testingClassName"));
+        //     obj.put("testingClassCode", request.getParameter("testingClassCode"));
+        //     obj.put("underTestClassName", request.getParameter("underTestClassName"));
+        //     obj.put("underTestClassCode", request.getParameter("underTestClassCode"));
+        //     StringEntity jsonEntity = new StringEntity(obj.toString(), ContentType.APPLICATION_JSON);
 
-            // Verifica lo stato della risposta
-            int statusCode = targetServiceResponse.getStatusLine().getStatusCode();
-            if (statusCode == HttpStatus.OK.value()) {
-                // Leggi il contenuto del file XML dalla risposta
-                HttpEntity entity = targetServiceResponse.getEntity();
-                String xmlContent = EntityUtils.toString(entity);
+        //     httpPost.setEntity(jsonEntity);
+        //     HttpResponse targetServiceResponse = httpClient.execute(httpPost);
 
-                // Restituisci il contenuto del file XML come risposta al client
-                return xmlContent;
-            } else {
-                // Restituisci un messaggio di errore al client
-                return "Errore durante il recupero del file XML.";
-            }
-        } catch (Exception e) {
-            // Gestisci eventuali errori e restituisci un messaggio di errore al client
-            return "Si è verificato un errore durante la richiesta del file XML.";
-        }
+        //     // Verifica lo stato della risposta
+        //     int statusCode = targetServiceResponse.getStatusLine().getStatusCode();
+        //     if (statusCode == HttpStatus.OK.value()) {
+        //         // Leggi il contenuto del file XML dalla risposta
+        //         HttpEntity entity = targetServiceResponse.getEntity();
+        //         String compileContent = EntityUtils.toString(entity);
+
+        //         String responseBody = EntityUtils.toString(entity);
+        //         JSONObject responseObj = new JSONObject(responseBody);
+        //         // Restituisci il contenuto del file XML come risposta al client
+        //         return xmlContent;
+        //     } else {
+        //         // Restituisci un messaggio di errore al client
+        //         return "Errore durante il recupero del file XML.";
+        //     }
+        // } catch (Exception e) {
+        //     // Gestisci eventuali errori e restituisci un messaggio di errore al client
+        //     return "Si è verificato un errore durante la richiesta del file XML.";
+        // }
     }
 
     // FUNZIONE CHE DOVREBBE RICEVERE I RISULTATI DEI ROBOT
@@ -243,9 +240,9 @@ public class MyController {
                                                                      // della richiesta
                     // .addBinaryBody("file", file.getBytes(), ContentType.APPLICATION_OCTET_STREAM,
                     //        file.getOriginalFilename());
-            httpPost.setEntity((HttpEntity) entityBuilder.build());
-            // Esecuzione della richiesta HTTP al servizio di destinazione
-            HttpResponse targetServiceResponse = httpClient.execute(httpPost);
+                                                                      
+            zione della richiesta HTTP al servizio di destinazione
+            on tServiceResponse = httpClient.execute(httpPost);
             // Restituisci una risposta di successo
             return ResponseEntity.ok("Dati, file e classe Java inviati con successo");
         } catch (Exception e) {
