@@ -635,40 +635,48 @@ public class NomeClasseTest {
       //esecuzione ricevendo XML da T7 e mandando partita a T4
       var runButton = document.getElementById("runButton");
       runButton.addEventListener("click", function() {
-          $(document).ready(function() {
-          $.ajax({
-            url: "http://localhost:80/getResultXml",
-            type: "GET",
-            dataType: "text",
-            success: function(xmlContent) {
-              // Utilizza il contenuto del file XML come desideri
-              console.log(xmlContent);
+        //   $(document).ready(function() {
+        //   $.ajax({
+        //     url: "http://localhost:80/getResultXml",
+        //     type: "GET",
+        //     dataType: "text",
+        //     success: function(xmlContent) {
+        //       // Utilizza il contenuto del file XML come desideri
+        //       console.log(xmlContent);
 
-              // Imposta il contenuto della console CodeMirror con i risultati del file XML
-              consoleArea2.setValue(xmlContent);
-            },
-            error: function() {
-              // Gestisci l'errore, ad esempio mostra un messaggio di errore
-              console.log("Errore durante il recupero del file XML.");
-            }
-          });
-        });
-
+        //       // Imposta il contenuto della console CodeMirror con i risultati del file XML
+        //       consoleArea2.setValue(xmlContent);
+        //     },
+        //     error: function() {
+        //       // Gestisci l'errore, ad esempio mostra un messaggio di errore
+        //       console.log("Errore durante il recupero del file XML.");
+        //     }
+        //   });
+        // });
         $(document).ready(function() {
-          $.ajax({
-            url: "http://localhost:80/getResultRobot",
-            type: "GET",
-            dataType: "text",
-            success: function(xmlContent) {
-              // Utilizza il contenuto del file XML come desideri
-              console.log(xmlContent);
+          var formData = new FormData();
+          formData.append("testingClassName", "NomeClasseTest.java");
+          formData.append("testingClassCode", editor.getValue());
+          formData.append("underTestClassName", localStorage.getItem("classe")+".java");
+          formData.append("underTestClassCode", sidebarEditor.getValue());
 
-              // Imposta il contenuto della console CodeMirror con i risultati del file XML
-              consoleArea2.append(xmlContent);
+          formData.append("testClassId", nameCUT);
+          formData.append("difficulty", difficolta);
+          formData.append("type", robotScelto);
+          $.ajax({
+            url: "http://t6-g12-app-1:8083/run", // con questa verso il task 6, si salva e conclude la partita e si decreta il vincitore
+            type: "POST",
+            data: formdata,
+            dataType: "text",
+            success: function(response) {
+              
+
+              // Imposta il contenuto della console CodeMirror con i risultati e il
+              consoleArea2.append(response); 
             },
             error: function() {
               // Gestisci l'errore, ad esempio mostra un messaggio di errore
-              console.log("Errore durante il recupero del file XML.");
+              console.log("Errore durante l'invio della partita.");
             }
           });
         });
