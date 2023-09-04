@@ -545,7 +545,7 @@ public class NomeClasseTest {
         if(idUtente == null || idPartita == null || idTurno == null || nameCUT == null || robotScelto == null) window.location.href = "/main";
 
         $.ajax({
-          url: "http://localhost:8083/receiveClassUnderTest",
+          url: "http://localhost/api/receiveClassUnderTest",
           type: "GET",
           data: { 
             idUtente: idUtente,
@@ -613,7 +613,7 @@ public class NomeClasseTest {
         // Esegui la chiamata AJAX al tuo controller Spring
         // Utilizza la libreria jQuery per semplificare la gestione delle richieste AJAX
         $.ajax({
-          url: "http://localhost:8083/sendInfo", //URL del controller Spring
+          url: "http://localhost/api/sendInfo", //URL del controller Spring
           type: "POST",
           data: formData,
           processData: false,
@@ -745,7 +745,7 @@ public class NomeClasseTest {
           formData.append("underTestClassCode", sidebarEditor.getValue());
 
           $.ajax({
-            url: "http://localhost:8083/getJaCoCoReport",
+            url: "http://localhost/api/getJaCoCoReport",
             type: "POST",
             data: formData,
             processData: false,

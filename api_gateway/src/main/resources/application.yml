@@ -11,42 +11,23 @@ ribbon:
 
 zuul: 
   routes:
-    login-service:
+    jacoco-service:
       sensitiveHeaders:
-      path: /api/login/**
-      url: http://t23-g1-app-1:8080/login
-    login-service:
+      path: /api/getJaCoCoReport/**
+      url: http://t6-g12-app-1:80/getJaCoCoReport
+    receiveClass-service:
       sensitiveHeaders:
-      path: /api/login/**
-      url: http://t23-g1-app-1:8080/login
-    login-service:
+      path: /api/receiveClassUnderTest/**
+      url: http://t6-g12-app-1:80/receiveClassUnderTest
+    sendInfo-service:
       sensitiveHeaders:
-      path: /login/**
-      url: http://t23-g1-app-1:8080/login
-    login-service:
+      path: /api/sendInfo/**
+      url: http://t6-g12-app-1:80/sendInfo
+    saveData-service:
       sensitiveHeaders:
-      path: /login/**
-      url: http://t23-g1-app-1:8080/login
-    login-service:
-      sensitiveHeaders:
-      path: /login/**
-      url: http://t23-g1-app-1:8080/login
-    login-service:
-      sensitiveHeaders:
-      path: /login/**
-      url: http://t23-g1-app-1:8080/login
-    login-service:
-      sensitiveHeaders:
-      path: /login/**
-      url: http://t23-g1-app-1:8080/login
-    login-service:
-      sensitiveHeaders:
-      path: /login/**
-      url: http://t23-g1-app-1:8080/login
-    login-service:
-      sensitiveHeaders:
-      path: /login/**
-      url: http://t23-g1-app-1:8080/login
+      path: /api/save-data/**
+      url: http://target-app-1:8080/save-data
+
 eureka:
   client:
     enabled: false

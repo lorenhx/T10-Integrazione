@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Random;
+import java.lang.ProcessBuilder;
 
 
 
@@ -37,7 +38,11 @@ public class RunRandoop {
 			
 			File f = new File(zip_ritorno);
 
-			Process p=Runtime.getRuntime().exec("bash robot.sh "+" "+name+" "+timelimit+" "+iter+" "+seed+" "+vecchioiter );
+			ProcessBuilder processBuilder = new ProcessBuilder();
+
+			processBuilder.command("bash", "robot.sh", name, String.valueOf(timelimit), String.valueOf(iter), String.valueOf(seed), String.valueOf(vecchioiter));
+
+			Process p= processBuilder.start();
 			
 			while(!f.exists())
 				Thread.sleep(100);

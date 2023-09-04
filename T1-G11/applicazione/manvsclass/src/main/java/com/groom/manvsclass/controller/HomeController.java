@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.groom.manvsclass.model.filesystem.upload.FileUploadResponse;
 import com.groom.manvsclass.model.filesystem.upload.FileUploadUtil;
+import com.groom.manvsclass.model.filesystem.RobotUtil;
 import com.groom.manvsclass.model.filesystem.download.FileDownloadUtil;
 import com.groom.manvsclass.model.Admin;
 import com.groom.manvsclass.model.ClassUT;
@@ -277,8 +278,10 @@ public class HomeController {
 		String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
 		long size = multipartFile.getSize();
 		
-		FileUploadUtil.saveCLassFile(fileName,classe.getName() ,multipartFile);
+		FileUploadUtil.saveCLassFile(fileName, classe.getName(), multipartFile);
 		
+		RobotUtil.generateAndSaveRobots(fileName, classe.getName(), multipartFile);
+
 		FileUploadResponse response = new FileUploadResponse();
 		response.setFileName(fileName);
 		response.setSize(size);

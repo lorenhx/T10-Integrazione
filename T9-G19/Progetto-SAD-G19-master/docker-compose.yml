@@ -5,7 +5,13 @@ services:
     build: .
     networks:
       - global-network
+    volumes:
+      - VolumeT9:/VolumeT9
 
 networks:
   global-network:
+    external: true
+
+volumes:
+  VolumeT9:
     external: true

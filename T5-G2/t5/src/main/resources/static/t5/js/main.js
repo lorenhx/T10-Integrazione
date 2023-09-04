@@ -140,7 +140,7 @@ function redirectToPagemain() {
 
 function redirectToPageeditor() {
   $.ajax({
-    url:'http://localhost:8082/save-data',
+    url:'http://localhost/api/save-data',
     data: {
       playerId: parseJwt(getCookie("jwt")).userId,
       classe: classe,
