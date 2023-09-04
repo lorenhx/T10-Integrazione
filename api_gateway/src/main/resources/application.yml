@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: api-gateway
+
+server:
+  port: 8090
+
+ribbon:
+  eureka:
+    enabled: false
+
+zuul: 
+  routes:
+    login-service:
+      sensitiveHeaders:
+      path: /api/login/**
+      url: http://t23-g1-app-1:8080/login
+    login-service:
+      sensitiveHeaders:
+      path: /api/login/**
+      url: http://t23-g1-app-1:8080/login
+    login-service:
+      sensitiveHeaders:
+      path: /login/**
+      url: http://t23-g1-app-1:8080/login
+    login-service:
+      sensitiveHeaders:
+      path: /login/**
+      url: http://t23-g1-app-1:8080/login
+    login-service:
+      sensitiveHeaders:
+      path: /login/**
+      url: http://t23-g1-app-1:8080/login
+    login-service:
+      sensitiveHeaders:
+      path: /login/**
+      url: http://t23-g1-app-1:8080/login
+    login-service:
+      sensitiveHeaders:
+      path: /login/**
+      url: http://t23-g1-app-1:8080/login
+    login-service:
+      sensitiveHeaders:
+      path: /login/**
+      url: http://t23-g1-app-1:8080/login
+    login-service:
+      sensitiveHeaders:
+      path: /login/**
+      url: http://t23-g1-app-1:8080/login
+eureka:
+  client:
+    enabled: false
