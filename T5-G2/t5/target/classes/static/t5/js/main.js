@@ -1,6 +1,7 @@
 //variabili per la selezione della classe e del robot
 var classe = null;
 var robot = null;
+var difficulty = null;
 //variabili per il login
 var user = null;
 var password = null;
@@ -36,6 +37,8 @@ function Handlebuttonclass(id, button) {
   $(document).ready(function () {
     classe = id;
     console.log('Hai cliccato sul bottone delle classi con id: ' + classe);
+    document.querySelectorAll("span.levels:not(.hidden)").forEach((el) => el.classList.add("hidden"));
+    if(document.getElementById("levels-"+button.id).classList.contains("hidden")) document.getElementById("levels-"+button.id).classList.remove("hidden");
     // Se il bottone precedentemente selezionato è diverso da null
     // allora rimuoviamo la classe highlighted
     if (bottonePrecedente1 != null) {
@@ -53,7 +56,8 @@ function Handlebuttonclass(id, button) {
 
 function Handlebuttonrobot(id, button) {
   $(document).ready(function () {
-    robot = id;
+    robot = "randoop";
+    difficulty = id;
     console.log('Hai cliccato sul bottone del robot con id: ' + robot);
 
     // Se il bottone precedentemente selezionato è diverso da null
@@ -75,7 +79,8 @@ function Handlebuttonrobot(id, button) {
 function redirectToPagereport() {
   console.log(classe);
   console.log(robot);
-  if (classe && robot) {
+  console.log(difficulty);
+  if (classe && robot && difficulty) {
 
     // $.ajax({
     //   url: 'http://localhost:8082/sendVariable', // L'URL del tuo endpoint sul server
@@ -98,6 +103,7 @@ function redirectToPagereport() {
     // });
     localStorage.setItem("classe", classe);
     localStorage.setItem("robot", robot);
+    localStorage.setItem("difficulty", difficulty);
     window.location.href = "/report";
   }
   else {
@@ -144,7 +150,8 @@ function redirectToPageeditor() {
     data: {
       playerId: parseJwt(getCookie("jwt")).userId,
       classe: classe,
-      robot: robot
+      robot: robot,
+      difficulty: difficulty
     },
     type:'POST',
     success: function (response) {

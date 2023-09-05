@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.g2.Model.ClassUT;
 import com.g2.Model.Game;
 import com.g2.Model.Player;
@@ -31,6 +32,7 @@ import org.springframework.http.HttpStatus;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -64,6 +66,30 @@ public class GuiController {
     // return "login"; // Nome del template Thymeleaf per la pagina1.html
     // }
 
+    public List<String> getLevels(String className) {
+        List<String> result = new ArrayList<String>();
+
+        for(int i = 1; i < 11; i++) {
+            try {
+                restTemplate.getForEntity("http://t4-g18-app-1:3000/robots?testClassId=" + className + "&type=randoop&difficulty="+String.valueOf(i), Object.class);
+            } catch (Exception e) {
+                break;
+            }
+
+            result.add(String.valueOf(i));
+        }
+
+        return result;
+    }
+
+    public List<ClassUT> getClasses() {
+        ResponseEntity<List<ClassUT>> responseEntity = restTemplate.exchange("http://manvsclass-controller-1:8080/home",
+            HttpMethod.GET, null, new ParameterizedTypeReference<List<ClassUT>>() {
+        });
+
+        return responseEntity.getBody();
+    }
+
     @GetMapping("/main")
     public String GUIController(Model model, @CookieValue(name = "jwt", required = false) String jwt) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<String, String>();
@@ -76,24 +102,25 @@ public class GuiController {
         // fileController.listFilesInFolder("/app/AUTName/AUTSourceCode");
         // int size = fileController.getClassSize();
 
-        ResponseEntity<List<ClassUT>> responseEntity = restTemplate.exchange("http://manvsclass-controller-1:8080/home",
-                HttpMethod.GET, null, new ParameterizedTypeReference<List<ClassUT>>() {
-                });
-
-        List<ClassUT> classes = responseEntity.getBody();
+        List<ClassUT> classes = getClasses();
 
         Map<Integer, String> hashMap = new HashMap<>();
+        Map<Integer, List<String>> robotList = new HashMap<>();
 
         for (int i = 0; i < classes.size(); i++) {
             String valore = classes.get(i).getName();
+
+            List<String> levels = getLevels(valore);
+            System.out.println(levels);
             hashMap.put(i, valore);
+            robotList.put(i, levels);
         }
 
         model.addAttribute("hashMap", hashMap);
 
         // hashMap2 = com.g2.Interfaces.t8.RobotList();
 
-        model.addAttribute("hashMap2", com.g2.Interfaces.t8.RobotList());
+        model.addAttribute("hashMap2", robotList);
         return "main";
     }
 
@@ -150,14 +177,14 @@ public class GuiController {
 
     @PostMapping("/save-data")
     public ResponseEntity<String> saveGame(@RequestParam("playerId") int playerId, @RequestParam("robot") String robot,
-            @RequestParam("classe") String classe) {
+            @RequestParam("classe") String classe, @RequestParam("difficulty") String difficulty) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         LocalTime oraCorrente = LocalTime.now();
         String oraFormattata = oraCorrente.format(formatter);
 
         GameDataWriter gameDataWriter = new GameDataWriter();
         // g.setGameId(gameDataWriter.getGameId());
-        Game g = new Game(playerId, "descrizione", "nome", "1");
+        Game g = new Game(playerId, "descrizione", "nome", difficulty);
         // g.setPlayerId(pl);
         // g.setPlayerClass(classe);
         // g.setRobot(robot);

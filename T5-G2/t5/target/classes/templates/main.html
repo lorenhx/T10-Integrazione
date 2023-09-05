@@ -5,10 +5,8 @@
     <link th:href="@{./t5/css/main.css}" rel="stylesheet" />
     <link th:href="@{./t5/css/main2.css}" rel="stylesheet" />
     <link th:href="@{./t5/bootstrap-4/css/bootstrap.min.css}" rel="stylesheet" />
-    <script th:src="@{/t5/js/main.js}">
-    </script>
-    <title>Choose your enemy</title>
-    
+    <script th:src="@{/t5/js/main.js}"></script>
+    <title>Choose your enemy</title> 
 </head>
 
 <body class=bg-custom>
@@ -34,7 +32,7 @@
                         <!-- Creo una lista composta di elementi lista-item che stampano 
                         il valore degli elementi contenuti nella lista java "classi" -->
                         <span class="spa">
-                            <button th:each="element: ${hashMap}" th:id="${element.value}"  type="button" class ="lista-item my-button"  th:text=${element.value} th:onclick="Handlebuttonclass(this.id,this)"></button>
+                            <button th:each="element: ${hashMap}" th:id="${element.key}"  type="button" class ="lista-item my-button"  th:text=${element.value} th:attr="onclick=|Handlebuttonclass('${element.value}', this)|"></button>
                         </span> 
 
                       
@@ -52,11 +50,10 @@
                             <div class="lista">  
                                 <!-- Creo una lista composta di elementi lista-item che stampano 
                                 il valore degli elementi contenuti nella lista java "classi" -->
-                                <span class="spa">
-                                    <button th:each="element: ${hashMap2}" th:id="${element.value}"  type="button" class ="lista-item my-button"  th:text=${element.value} th:onclick="Handlebuttonrobot(this.id,this)"></button>
+                                <span th:each="entry: ${hashMap2}" th:id="${'levels-' + entry.key}" class="spa levels">
+                                    <button th:each="value: ${entry.value}" th:id="${entry.key + '-' + value}"  type="button" class ="lista-item my-button" th:text="${'randoop - LVL ' + value}" th:attr="onclick=|Handlebuttonrobot('${value}', this)|"></button>
                                 </span> 
-                      
-                        </div>
+                            </div>
                     </div>
                 </div>
             </div>
