@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.json.JSONObject;
+import org.apache.http.client.utils.URIBuilder;
 //import net.minidev.json.JSONObject;
 
 @CrossOrigin
@@ -65,7 +66,8 @@ public class MyController {
             JSONObject resp = new JSONObject();
             String ut = new String(classUnderTest);
             // Remove BOM Character
-            if(ut.startsWith("\uFEFF")) ut = ut.substring(1);
+            if (ut.startsWith("\uFEFF"))
+                ut = ut.substring(1);
 
             resp.put("class", ut);
 
@@ -122,44 +124,107 @@ public class MyController {
 
     // @PostMapping("/getResultXml")
     // public String handleGetResultXmlRequest() {
-    //     // try {
-    //     //     // Esegui la richiesta HTTP al servizio di destinazione
-    //     //     HttpPost httpPost = new HttpPost("URL_DEL_SERVIZIO_DESTINAZIONE");
-    //     //     JSONObject obj = new JSONObject();
+    // // try {
+    // // // Esegui la richiesta HTTP al servizio di destinazione
+    // // HttpPost httpPost = new HttpPost("URL_DEL_SERVIZIO_DESTINAZIONE");
+    // // JSONObject obj = new JSONObject();
 
-    //     //     obj.put("testingClassName", request.getParameter("testingClassName"));
-    //     //     obj.put("testingClassCode", request.getParameter("testingClassCode"));
-    //     //     obj.put("underTestClassName", request.getParameter("underTestClassName"));
-    //     //     obj.put("underTestClassCode", request.getParameter("underTestClassCode"));
-    //     //     StringEntity jsonEntity = new StringEntity(obj.toString(), ContentType.APPLICATION_JSON);
+    // // obj.put("testingClassName", request.getParameter("testingClassName"));
+    // // obj.put("testingClassCode", request.getParameter("testingClassCode"));
+    // // obj.put("underTestClassName", request.getParameter("underTestClassName"));
+    // // obj.put("underTestClassCode", request.getParameter("underTestClassCode"));
+    // // StringEntity jsonEntity = new StringEntity(obj.toString(),
+    // ContentType.APPLICATION_JSON);
 
-    //     //     httpPost.setEntity(jsonEntity);
-    //     //     HttpResponse targetServiceResponse = httpClient.execute(httpPost);
+    // // httpPost.setEntity(jsonEntity);
+    // // HttpResponse targetServiceResponse = httpClient.execute(httpPost);
 
-    //     //     // Verifica lo stato della risposta
-    //     //     int statusCode = targetServiceResponse.getStatusLine().getStatusCode();
-    //     //     if (statusCode == HttpStatus.OK.value()) {
-    //     //         // Leggi il contenuto del file XML dalla risposta
-    //     //         HttpEntity entity = targetServiceResponse.getEntity();
-    //     //         String compileContent = EntityUtils.toString(entity);
+    // // // Verifica lo stato della risposta
+    // // int statusCode = targetServiceResponse.getStatusLine().getStatusCode();
+    // // if (statusCode == HttpStatus.OK.value()) {
+    // // // Leggi il contenuto del file XML dalla risposta
+    // // HttpEntity entity = targetServiceResponse.getEntity();
+    // // String compileContent = EntityUtils.toString(entity);
 
-    //     //         String responseBody = EntityUtils.toString(entity);
-    //     //         JSONObject responseObj = new JSONObject(responseBody);
-    //     //         // Restituisci il contenuto del file XML come risposta al client
-    //     //         return xmlContent;
-    //     //     } else {
-    //     //         // Restituisci un messaggio di errore al client
-    //     //         return "Errore durante il recupero del file XML.";
-    //     //     }
-    //     // } catch (Exception e) {
-    //     //     // Gestisci eventuali errori e restituisci un messaggio di errore al client
-    //     //     return "Si è verificato un errore durante la richiesta del file XML.";
-    //     // }
+    // // String responseBody = EntityUtils.toString(entity);
+    // // JSONObject responseObj = new JSONObject(responseBody);
+    // // // Restituisci il contenuto del file XML come risposta al client
+    // // return xmlContent;
+    // // } else {
+    // // // Restituisci un messaggio di errore al client
+    // // return "Errore durante il recupero del file XML.";
+    // // }
+    // // } catch (Exception e) {
+    // // // Gestisci eventuali errori e restituisci un messaggio di errore al
+    // client
+    // // return "Si è verificato un errore durante la richiesta del file XML.";
+    // // }
     // }
+    // FUNZIONE CHE DOVREBBE RICEVERE I RISULTATI DEI ROBOT
+    @PostMapping("/run") // NON ESISTE NESSUN INTERFACCIA VERSO I COMPILATORI DEI ROBOT EVOSUITE E
+                         // RANDOOP
+    public String runner(HttpServletRequest request) {
+        try {
+            // Esegui la richiesta HTTP al servizio di destinazione
+
+            // RISULTATI UTENTE VERSO TASK 7
+            HttpPost httpPost = new HttpPost("http://remoteccc-app-1:1234/compile-and-codecoverage");
+
+            JSONObject obj = new JSONObject();
+            obj.put("testingClassName", request.getParameter("testingClassName"));
+            obj.put("testingClassCode", request.getParameter("testingClassCode"));
+            obj.put("underTestClassName", request.getParameter("underTestClassName"));
+            obj.put("underTestClassCode", request.getParameter("underTestClassCode"));
+
+            StringEntity jsonEntity = new StringEntity(obj.toString(), ContentType.APPLICATION_JSON);
+
+            httpPost.setEntity(jsonEntity);
+
+            HttpResponse response = httpClient.execute(httpPost);
+            HttpEntity entity = response.getEntity();
+
+            String responseBody = EntityUtils.toString(entity);
+            JSONObject responseObj = new JSONObject(responseBody);
+
+            String xml_string = responseObj.getString("coverage");
+            //PRESA DELLO SCORE UTENTE
+            //...
+            // headers.setContentDisposition(ContentDisposition.attachment().filename("index.html").build());
+            // RISULTATI ROBOT VERSO TASK4
+            URIBuilder builder = new URIBuilder("http://t4-g18-app-1:3000/robots");
+            builder.setParameter("testClassId", request.getParameter("testClassId"))
+                    .setParameter("type", request.getParameter("type"))
+                    .setParameter("difficulty", request.getParameter("difficulty"));
+
+            HttpGet get = new HttpGet(builder.build());
+            response = httpClient.execute(get);
+
+            // Verifica lo stato della risposta
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode == HttpStatus.OK.value()) {
+                // Leggi il contenuto dalla risposta
+                entity = response.getEntity();
+                responseBody = EntityUtils.toString(entity);
+                responseObj = new JSONObject(responseBody);
+    
+                String score = responseObj.getString("scores"); // salvo il round id che l'Api mi restituisce
+                Integer roboScore = Integer.parseInt(score);
+                //if scoreRObo>scoreUTENTE 
+                //String vincitore = new String(request.getParameter("type"))
+                //RITORNA VINCITORE
+                return //"Il vincitore è "+vincitore+" con un punteggio di "+vinc_score+"";
+            } else {
+                // Restituisci un messaggio di errore al client
+                return "Errore durante il recupero dello score del robot.";
+            }
+        } catch (Exception e) {
+            // Gestisci eventuali errori e restituisci un messaggio di errore al client
+            return "Si è verificato un errore durante la richiesta del file XML.";
+        }
+    }
 
     // FUNZIONE CHE DOVREBBE RICEVERE I RISULTATI DEI ROBOT
-    @GetMapping("/getResultRobot") // NON ESISTE NESSUN INTERFACCIA VERSO I COMPILATORI DEI ROBOT EVOSUITE E
-                                   // RANDOOP
+    @GetMapping("/getResultRobot")
     public String handleGetResultRobotRequest() {
         try {
             // Esegui la richiesta HTTP al servizio di destinazione
@@ -241,10 +306,10 @@ public class MyController {
                     .addTextBody("robotScelto", robotScelto)
                     .addTextBody("difficolta", difficolta)
                     .addTextBody("playerTestClass", playerTestClass); // Aggiungi la classe Java come parte del corpo
-                                                                     // della richiesta
-                    // .addBinaryBody("file", file.getBytes(), ContentType.APPLICATION_OCTET_STREAM,
-                    //        file.getOriginalFilename());
-                                                                      
+                                                                      // della richiesta
+            // .addBinaryBody("file", file.getBytes(), ContentType.APPLICATION_OCTET_STREAM,
+            // file.getOriginalFilename());
+
             // Esecuzione della richiesta HTTP al servizio di destinazione
             HttpResponse targetServiceResponse = httpClient.execute(httpPost);
             // Restituisci una risposta di successo
