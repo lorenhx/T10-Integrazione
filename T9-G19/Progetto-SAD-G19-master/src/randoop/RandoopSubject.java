@@ -168,7 +168,7 @@ public class RandoopSubject implements ISubject {
         File classFiles [] = classDir.listFiles();
         for(File classFile : classFiles) {
         	classFile.delete();
-        	}
+        }
         
     }
 
