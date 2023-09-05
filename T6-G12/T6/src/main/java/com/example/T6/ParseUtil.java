@@ -16,6 +16,6 @@ public class ParseUtil {
         
         line = doc.selectFirst("report > counter[type=LINE]");
 		
-		return Integer.parseInt(line.attr("covered")) / (Integer.parseInt(line.attr("covered")) + Integer.parseInt(line.attr("missed")));
+		return 100 * Integer.parseInt(line.attr("covered")) / (Integer.parseInt(line.attr("covered")) + Integer.parseInt(line.attr("missed")));
 	}
 }

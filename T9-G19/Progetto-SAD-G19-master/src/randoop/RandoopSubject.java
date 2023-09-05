@@ -23,7 +23,7 @@ public class RandoopSubject implements ISubject {
     private int cov;
     private int ex_cov;
     private int timelimit;
-    private static int max_iter = 1;
+    private static int max_iter = 5;
     private int iter;
     private int sat;
     private static int max_sat = 10;
@@ -101,6 +101,15 @@ public class RandoopSubject implements ISubject {
                     File[] files = sourceFile.listFiles();
 
                     if (files != null) {
+                        try {
+                            Path origine = (new File("./FolderTree/"+class_file.getName().subSequence(0,class_file.getName().length()-5) + "/RobotTest/RandoopTest/"+class_file.getName().subSequence(0,class_file.getName().length()-5)+"-"+i+"-dati_di_copertura/coveragetot.xml")).toPath();
+                            Path destinazione = new File(directory_level.getPath(), "coveragetot.xml").toPath();
+                            Files.copy(origine, destinazione, StandardCopyOption.REPLACE_EXISTING);
+                            System.out.println("File copiato: " + destinazione.toString());
+                        } catch (IOException e) {
+                            System.out.println("File xml non copiato: " + e.toString());
+                            e.printStackTrace();
+                        }
                         for (File f : files) {
                             if (f.isFile()) {
 

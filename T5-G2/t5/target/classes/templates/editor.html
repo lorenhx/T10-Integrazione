@@ -660,20 +660,26 @@ public class NomeClasseTest {
           formData.append("underTestClassName", localStorage.getItem("classe")+".java");
           formData.append("underTestClassCode", sidebarEditor.getValue());
 
-          formData.append("testClassId", nameCUT);
-          formData.append("difficulty", difficolta);
-          formData.append("type", robotScelto);
+          formData.append("testClassId", localStorage.getItem("classe"));
+          formData.append("difficulty", "easy");
+          formData.append("type", "randoop");
           $.ajax({
             url: "http://localhost/api/run", // con questa verso il task 6, si salva e conclude la partita e si decreta il vincitore
             type: "POST",
-            data: formdata,
+            data: formData,
+            processData: false,
+            contentType: false,
             dataType: "json",
             success: function(response) {
-              consoleArea.setValue(response.compileOut);
+              console.log(response);
+
+              consoleArea.setValue(response.outCompile);
               highlightCodeCoverage($.parseXML(response.coverage));
-              consoleArea2.append(response.robotScore);
+              consoleArea2.setValue(`Il tuo punteggio: ${response.score.toString()}
+Il punteggio del robot: ${response.robotScore.toString()}`);
               
-              alert(response.win);
+              alert(response.win == true ? "Hai vinto!" : "Hai perso!");
+              localStorage.clear();
             },
             error: function() {
               // Gestisci l'errore, ad esempio mostra un messaggio di errore

@@ -15,8 +15,8 @@ public class FolderOperations {
             for (File file : files) {
                 if (file.isDirectory()) {
                     if (file.getName().contains("dati_di_copertura")) {
-                        // clearSubfolders(file); // Chiamata ricorsiva per eliminare le sottocartelle
-                        // deleteFolder(file); // Elimina la cartella corrente
+                        clearSubfolders(file); // Chiamata ricorsiva per eliminare le sottocartelle
+                        deleteFolder(file); // Elimina la cartella corrente
                     } else {
                         clearSubfolders(file); // Chiamata ricorsiva per le sottocartelle senza eliminazione
                     }

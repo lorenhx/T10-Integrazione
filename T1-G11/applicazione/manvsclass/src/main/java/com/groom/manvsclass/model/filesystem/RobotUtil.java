@@ -12,6 +12,14 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 import org.springframework.web.multipart.MultipartFile;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -89,7 +97,31 @@ public class RobotUtil {
 			e.printStackTrace();
 		}
 
-		System.out.println("La copertura è: " + String.valueOf(LineCoverage("/VolumeT9/app/FolderTree/" + cname + "/RobotTest/RandoopTest/" + cname + "-0-dati_di_copertura/coveragetot.xml")));
+		int score = LineCoverage("/VolumeT9/app/FolderTree/" + cname + "/RobotTest/RandoopTest/" + cname + "-0-dati_di_copertura/coveragetot.xml");
+
+		System.out.println("La copertura è: " + String.valueOf(score));
+
+		HttpClient httpClient = HttpClientBuilder.create().build();
+		HttpPost httpPost = new HttpPost("http://t4-g18-app-1:3000/robots");
+
+		JSONArray arr = new JSONArray();
+
+		JSONObject rob = new JSONObject();
+		rob.put("scores", String.valueOf(score));
+		rob.put("type", "randoop");
+		rob.put("difficulty", "easy");
+		rob.put("testClassId", cname);
+
+		arr.put(rob);
+
+		JSONObject obj = new JSONObject();
+		obj.put("robots", arr);
+
+		StringEntity jsonEntity = new StringEntity(obj.toString(), ContentType.APPLICATION_JSON);
+
+		httpPost.setEntity(jsonEntity);
+
+		HttpResponse response = httpClient.execute(httpPost);
 
         // EVOSUITE - T8
 		// TODO: RICHIEDE AGGIUSTAMENTI IN T8

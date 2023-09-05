@@ -188,6 +188,7 @@ public class MyController {
             JSONObject responseObj = new JSONObject(responseBody);
 
             String xml_string = responseObj.getString("coverage");
+            String outCompile = responseObj.getString("outCompile");
             //PRESA DELLO SCORE UTENTE
             int userScore = ParseUtil.LineCoverage(xml_string);
 
@@ -202,7 +203,7 @@ public class MyController {
 
             // Verifica lo stato della risposta
             int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode != HttpStatus.OK.value()) {
+            if (statusCode > 299) {
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
             
@@ -214,11 +215,12 @@ public class MyController {
             String score = responseObj.getString("scores"); // salvo il round id che l'Api mi restituisce
             Integer roboScore = Integer.parseInt(score);
 
-            JSONObject result = new JSONObject(responseBody);
-            result.put("compileOut", responseObj.getString("compileOut"));
+            JSONObject result = new JSONObject();
+            result.put("outCompile", outCompile);
             result.put("coverage", xml_string);
             result.put("win", userScore >= roboScore);
             result.put("robotScore", roboScore);
+            result.put("score", userScore);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -226,6 +228,7 @@ public class MyController {
             return new ResponseEntity<>(result.toString(), headers, HttpStatus.OK);
         } catch (Exception e) {
             // Gestisci eventuali errori e restituisci un messaggio di errore al client
+            System.err.println(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -275,8 +278,13 @@ public class MyController {
             httpPost.setEntity(jsonEntity);
 
             HttpResponse response = httpClient.execute(httpPost);
-            HttpEntity entity = response.getEntity();
 
+            if(response.getStatusLine().getStatusCode() > 299) {
+                System.err.println("Erorre compilazione");
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            HttpEntity entity = response.getEntity();
             String responseBody = EntityUtils.toString(entity);
             JSONObject responseObj = new JSONObject(responseBody);
 
