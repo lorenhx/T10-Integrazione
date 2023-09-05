@@ -15,6 +15,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.ContentType;
@@ -171,7 +172,6 @@ public class MyController {
     public ResponseEntity<String> runner(HttpServletRequest request) {
         try {
             // Esegui la richiesta HTTP al servizio di destinazione
-
             // RISULTATI UTENTE VERSO TASK 7
             HttpPost httpPost = new HttpPost("http://remoteccc-app-1:1234/compile-and-codecoverage");
 
@@ -186,6 +186,13 @@ public class MyController {
             httpPost.setEntity(jsonEntity);
 
             HttpResponse response = httpClient.execute(httpPost);
+
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode > 299) {
+                System.out.println("Errore in compilecodecoverage");
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
             HttpEntity entity = response.getEntity();
 
             String responseBody = EntityUtils.toString(entity);
@@ -204,10 +211,11 @@ public class MyController {
 
             HttpGet get = new HttpGet(builder.build());
             response = httpClient.execute(get);
-
+            get.releaseConnection();
             // Verifica lo stato della risposta
-            int statusCode = response.getStatusLine().getStatusCode();
+            statusCode = response.getStatusLine().getStatusCode();
             if (statusCode > 299) {
+                System.out.println("Errore in robots");
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
@@ -221,8 +229,7 @@ public class MyController {
 
             // conclusione e salvataggio partita
             // chiusura turno con vincitore
-            HttpPut httpPut = new HttpPut(
-                    "http://t4-g18-app-1:3000/turns/" + String.valueOf(request.getParameter("turnId")));
+            HttpPut httpPut = new HttpPut("http://t4-g18-app-1:3000/turns/" + String.valueOf(request.getParameter("turnId")));
 
             obj = new JSONObject();
             obj.put("scores", String.valueOf(userScore));
@@ -240,8 +247,11 @@ public class MyController {
             httpPut.setEntity(jsonEntity);
 
             response = httpClient.execute(httpPut);
+            httpPut.releaseConnection();
+
             statusCode = response.getStatusLine().getStatusCode();
             if (statusCode > 299) {
+                System.out.println("Errore in put turn");
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
             // chiusura round
@@ -256,8 +266,11 @@ public class MyController {
             httpPut.setEntity(jsonEntity);
 
             response = httpClient.execute(httpPut);
+            httpPut.releaseConnection();
+
             statusCode = response.getStatusLine().getStatusCode();
             if (statusCode > 299) {
+                System.out.println("Errore in put round");
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
             // chiusura gioco
@@ -271,8 +284,11 @@ public class MyController {
             httpPut.setEntity(jsonEntity);
 
             response = httpClient.execute(httpPut);
+            httpPut.releaseConnection();
+            
             statusCode = response.getStatusLine().getStatusCode();
             if (statusCode > 299) {
+                System.out.println("Errore in put game");
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
             // costruzione risposta verso task5
