@@ -12,8 +12,33 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 import org.springframework.web.multipart.MultipartFile;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
 
 public class RobotUtil {
+
+	public static int LineCoverage(String path) {
+		Element line = null;
+		String linecoverage= null;
+		try {
+			
+			File cov = new File(path);
+			
+			Document doc = Jsoup.parse(cov, null, "", Parser.xmlParser());
+			line = doc.getElementsByTag("coverage").get(3);
+			linecoverage = String.valueOf(line).substring(32, 35);
+			
+			linecoverage = linecoverage.split("%", 0)[0];
+	
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return Integer.valueOf(linecoverage) ;
+	}
 
     public static void generateAndSaveRobots(String fileName, String cname, MultipartFile multipartFile) throws IOException {
         // RANDOOP - T9			    
@@ -40,11 +65,11 @@ public class RobotUtil {
 
         ProcessBuilder processBuilder = new ProcessBuilder();
 
-        processBuilder.command("/usr/lib/jvm/java-1.8-openjdk/bin/java", "-jar", "Task9-G19-0.0.1-SNAPSHOT.jar");
+        processBuilder.command("java", "-jar", "Task9-G19-0.0.1-SNAPSHOT.jar");
         processBuilder.directory(new File("/VolumeT9/app/"));
     
         Process process = processBuilder.start();
-
+ 
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line;
         while ((line = reader.readLine()) != null)
@@ -63,6 +88,8 @@ public class RobotUtil {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		System.out.println("La copertura è: " + String.valueOf(LineCoverage("/VolumeT9/app/FolderTree/" + cname + "/RobotTest/RandoopTest/" + cname + "-0-dati_di_copertura/coveragetot.xml")));
 
         // EVOSUITE - T8
 		// TODO: RICHIEDE AGGIUSTAMENTI IN T8

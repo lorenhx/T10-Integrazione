@@ -31,6 +31,11 @@ zuul:
       sensitiveHeaders:
       path: /api/downloadFile/**
       url: http://manvsclass-controller-1:8080/downloadFile
+    run-service:
+      sensitiveHeaders:
+      path: /api/run/**
+      url: http://t6-g12-app-1:80/run
+
 eureka:
   client:
     enabled: false

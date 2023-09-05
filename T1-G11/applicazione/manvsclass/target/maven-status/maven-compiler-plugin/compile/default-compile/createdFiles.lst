@@ -1,4 +1,6 @@
 com\groom\manvsclass\model\repository\AdminRepository.class
+com\groom\manvsclass\model\repository\SearchRepository.class
+com\groom\manvsclass\model\repository\SearchRepositoryImpl.class
 com\groom\manvsclass\ManvsclassApplication.class
 com\groom\manvsclass\model\filesystem\RobotUtil.class
 com\groom\manvsclass\model\repository\ClassRepository.class
@@ -6,6 +8,8 @@ com\groom\manvsclass\controller\HomeController.class
 com\groom\manvsclass\model\ClassUT.class
 com\groom\manvsclass\model\filesystem\download\FileDownloadUtil.class
 com\groom\manvsclass\model\interaction.class
+com\groom\manvsclass\model\repository\InteractionRepository.class
+com\groom\manvsclass\model\repository\OperationRepository.class
 com\groom\manvsclass\model\Admin.class
 com\groom\manvsclass\model\filesystem\upload\FileUploadResponse.class
 com\groom\manvsclass\model\Operation.class

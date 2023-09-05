@@ -161,9 +161,10 @@ public class MyController {
     // // }
     // }
     // FUNZIONE CHE DOVREBBE RICEVERE I RISULTATI DEI ROBOT
+
     @PostMapping("/run") // NON ESISTE NESSUN INTERFACCIA VERSO I COMPILATORI DEI ROBOT EVOSUITE E
                          // RANDOOP
-    public String runner(HttpServletRequest request) {
+    public ResponseEntity<String> runner(HttpServletRequest request) {
         try {
             // Esegui la richiesta HTTP al servizio di destinazione
 
@@ -188,8 +189,8 @@ public class MyController {
 
             String xml_string = responseObj.getString("coverage");
             //PRESA DELLO SCORE UTENTE
-            //...
-            // headers.setContentDisposition(ContentDisposition.attachment().filename("index.html").build());
+            int userScore = ParseUtil.LineCoverage(xml_string);
+
             // RISULTATI ROBOT VERSO TASK4
             URIBuilder builder = new URIBuilder("http://t4-g18-app-1:3000/robots");
             builder.setParameter("testClassId", request.getParameter("testClassId"))
@@ -201,25 +202,31 @@ public class MyController {
 
             // Verifica lo stato della risposta
             int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode == HttpStatus.OK.value()) {
-                // Leggi il contenuto dalla risposta
-                entity = response.getEntity();
-                responseBody = EntityUtils.toString(entity);
-                responseObj = new JSONObject(responseBody);
-    
-                String score = responseObj.getString("scores"); // salvo il round id che l'Api mi restituisce
-                Integer roboScore = Integer.parseInt(score);
-                //if scoreRObo>scoreUTENTE 
-                //String vincitore = new String(request.getParameter("type"))
-                //RITORNA VINCITORE
-                return //"Il vincitore è "+vincitore+" con un punteggio di "+vinc_score+"";
-            } else {
-                // Restituisci un messaggio di errore al client
-                return "Errore durante il recupero dello score del robot.";
+            if (statusCode != HttpStatus.OK.value()) {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
+            
+            // Leggi il contenuto dalla risposta
+            entity = response.getEntity();
+            responseBody = EntityUtils.toString(entity);
+            responseObj = new JSONObject(responseBody);
+
+            String score = responseObj.getString("scores"); // salvo il round id che l'Api mi restituisce
+            Integer roboScore = Integer.parseInt(score);
+
+            JSONObject result = new JSONObject(responseBody);
+            result.put("compileOut", responseObj.getString("compileOut"));
+            result.put("coverage", xml_string);
+            result.put("win", userScore >= roboScore);
+            result.put("robotScore", roboScore);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            return new ResponseEntity<>(result.toString(), headers, HttpStatus.OK);
         } catch (Exception e) {
             // Gestisci eventuali errori e restituisci un messaggio di errore al client
-            return "Si è verificato un errore durante la richiesta del file XML.";
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
