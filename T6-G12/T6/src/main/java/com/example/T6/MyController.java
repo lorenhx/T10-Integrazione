@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.http.HttpEntity;
@@ -189,7 +193,7 @@ public class MyController {
 
             String xml_string = responseObj.getString("coverage");
             String outCompile = responseObj.getString("outCompile");
-            //PRESA DELLO SCORE UTENTE
+            // PRESA DELLO SCORE UTENTE
             int userScore = ParseUtil.LineCoverage(xml_string);
 
             // RISULTATI ROBOT VERSO TASK4
@@ -206,15 +210,72 @@ public class MyController {
             if (statusCode > 299) {
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            
+
             // Leggi il contenuto dalla risposta
             entity = response.getEntity();
             responseBody = EntityUtils.toString(entity);
             responseObj = new JSONObject(responseBody);
 
-            String score = responseObj.getString("scores"); // salvo il round id che l'Api mi restituisce
+            String score = responseObj.getString("scores");
             Integer roboScore = Integer.parseInt(score);
 
+            // conclusione e salvataggio partita
+            // chiusura turno con vincitore
+            HttpPut httpPut = new HttpPut(
+                    "http://t4-g18-app-1:3000/turns/" + String.valueOf(request.getParameter("turnId")));
+
+            obj = new JSONObject();
+            obj.put("scores", String.valueOf(userScore));
+
+            if (roboScore > userScore) {
+                obj.put("isWinner", false);
+            } else {
+                obj.put("isWinner", true);
+            }
+            String time = ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT);
+            obj.put("closedAt", time);
+
+            jsonEntity = new StringEntity(obj.toString(), ContentType.APPLICATION_JSON);
+
+            httpPut.setEntity(jsonEntity);
+
+            response = httpClient.execute(httpPut);
+            statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode > 299) {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            // chiusura round
+            httpPut = new HttpPut("http://t4-g18-app-1:3000/rounds/" + String.valueOf(request.getParameter("roundId")));
+
+            obj = new JSONObject();
+
+            obj.put("closedAt", time);
+
+            jsonEntity = new StringEntity(obj.toString(), ContentType.APPLICATION_JSON);
+
+            httpPut.setEntity(jsonEntity);
+
+            response = httpClient.execute(httpPut);
+            statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode > 299) {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            // chiusura gioco
+            httpPut = new HttpPut("http://t4-g18-app-1:3000/games/" + String.valueOf(request.getParameter("gameId")));
+
+            obj = new JSONObject();
+            obj.put("closedAt", time);
+
+            jsonEntity = new StringEntity(obj.toString(), ContentType.APPLICATION_JSON);
+
+            httpPut.setEntity(jsonEntity);
+
+            response = httpClient.execute(httpPut);
+            statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode > 299) {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            // costruzione risposta verso task5
             JSONObject result = new JSONObject();
             result.put("outCompile", outCompile);
             result.put("coverage", xml_string);
@@ -279,7 +340,7 @@ public class MyController {
 
             HttpResponse response = httpClient.execute(httpPost);
 
-            if(response.getStatusLine().getStatusCode() > 299) {
+            if (response.getStatusLine().getStatusCode() > 299) {
                 System.err.println("Erorre compilazione");
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }

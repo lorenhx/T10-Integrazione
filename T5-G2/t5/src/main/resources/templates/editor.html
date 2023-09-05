@@ -660,6 +660,9 @@ public class NomeClasseTest {
           formData.append("underTestClassName", localStorage.getItem("classe")+".java");
           formData.append("underTestClassCode", sidebarEditor.getValue());
 
+          formData.append("turnId",localStorage.getItem("turnId"));
+          formData.append("roundId",localStorage.getItem("roundId"));
+          formData.append("gameId",localStorage.getItem("gameId"));
           formData.append("testClassId", localStorage.getItem("classe"));
           formData.append("difficulty", localStorage.getItem("difficulty"));
           formData.append("type", "randoop");
