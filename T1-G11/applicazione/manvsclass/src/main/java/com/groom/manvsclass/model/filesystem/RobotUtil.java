@@ -97,31 +97,40 @@ public class RobotUtil {
 			e.printStackTrace();
 		}
 
-		int score = LineCoverage("/VolumeT9/app/FolderTree/" + cname + "/RobotTest/RandoopTest/" + cname + "-0-dati_di_copertura/coveragetot.xml");
+		File resultsDir = new File("/VolumeT9/app/FolderTree/" + cname + "/RobotTest/RandoopTest");
 
-		System.out.println("La copertura è: " + String.valueOf(score));
+        File results [] = resultsDir.listFiles();
+        for(File result : results) {
+			int score = LineCoverage(result.getAbsolutePath() + "/coveragetot.xml");
 
-		HttpClient httpClient = HttpClientBuilder.create().build();
-		HttpPost httpPost = new HttpPost("http://t4-g18-app-1:3000/robots");
+			System.out.println(result.toString().substring(result.toString().length() - 7, result.toString().length() - 5));
+			int livello = Integer.parseInt(result.toString().substring(result.toString().length() - 7, result.toString().length() - 5));
 
-		JSONArray arr = new JSONArray();
+			System.out.println("La copertura del livello " + String.valueOf(livello) + " è: " + String.valueOf(score));
 
-		JSONObject rob = new JSONObject();
-		rob.put("scores", String.valueOf(score));
-		rob.put("type", "randoop");
-		rob.put("difficulty", "easy");
-		rob.put("testClassId", cname);
+			HttpClient httpClient = HttpClientBuilder.create().build();
+			HttpPost httpPost = new HttpPost("http://t4-g18-app-1:3000/robots");
 
-		arr.put(rob);
+			JSONArray arr = new JSONArray();
 
-		JSONObject obj = new JSONObject();
-		obj.put("robots", arr);
+			JSONObject rob = new JSONObject();
+			rob.put("scores", String.valueOf(score));
+			rob.put("type", "randoop");
+			rob.put("difficulty", String.valueOf(livello));
+			rob.put("testClassId", cname);
 
-		StringEntity jsonEntity = new StringEntity(obj.toString(), ContentType.APPLICATION_JSON);
+			arr.put(rob);
 
-		httpPost.setEntity(jsonEntity);
+			JSONObject obj = new JSONObject();
+			obj.put("robots", arr);
 
-		HttpResponse response = httpClient.execute(httpPost);
+			StringEntity jsonEntity = new StringEntity(obj.toString(), ContentType.APPLICATION_JSON);
+
+			httpPost.setEntity(jsonEntity);
+
+			HttpResponse response = httpClient.execute(httpPost);
+
+		}
 
         // EVOSUITE - T8
 		// TODO: RICHIEDE AGGIUSTAMENTI IN T8
