@@ -25,12 +25,12 @@ java1_8_path="/usr/lib/jvm/java-1.8-openjdk/bin/java"
 javac="/usr/lib/jvm/java-1.8-openjdk/bin/javac"
 
 # Percorso della cartella dove è ubicato il JAR di EMMA
-emmapath="/VolumeT9/app/emma-2.0.5312/lib/emma.jar"
+emmapath="./emma-2.0.5312/lib/emma.jar"
 
 $java1_8_path -version
 
 # Percorso di RANDOOP
-RANDOOP_PATH="/VolumeT9/app"
+RANDOOP_PATH="."
 
 # Radice del treefolder
 radice="FolderTree/$name/RobotTest/RandoopTest/"
@@ -44,7 +44,7 @@ echo "---CREAZIONE CARTELLA INSTRADAMENTO SE NON ESISTENTE---"
 mkdir -p ./classes
 
 # Percorso della classe da testare
-ipvar="/VolumeT9/app/classes"
+ipvar="./classes"
 
 # Percorso della classe da compilare
 classe="classes/$name.java"

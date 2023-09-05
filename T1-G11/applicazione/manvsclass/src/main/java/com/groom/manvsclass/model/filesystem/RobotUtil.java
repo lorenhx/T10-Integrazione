@@ -50,6 +50,10 @@ public class RobotUtil {
         while ((line = reader.readLine()) != null)
             System.out.println(line);
 			
+        reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+        while ((line = reader.readLine()) != null)
+            System.out.println(line);
+
         try {
 			int exitCode = process.waitFor();
 
@@ -61,6 +65,7 @@ public class RobotUtil {
 		}
 
         // EVOSUITE - T8
+		// TODO: RICHIEDE AGGIUSTAMENTI IN T8
     }
     
 

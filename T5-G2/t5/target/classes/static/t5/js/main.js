@@ -167,7 +167,7 @@ function redirectToPageeditor() {
 function downloadFile() {
   fileId = classe;
   if (fileId) {
-    const downloadUrl = 'http://localhost:8080/downloadFile/' + fileId;
+    const downloadUrl = 'http://localhost/api/downloadFile/' + fileId;
 
     fetch(downloadUrl, {
       method: 'GET',

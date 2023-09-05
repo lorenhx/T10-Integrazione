@@ -9,8 +9,10 @@ volumes:
 services:
   app:
     build: .
-    ports:
-      - 3000:3000/tcp
+    expose:
+      - 3000
+    # ports:
+    #   - 3000:3000/tcp
     volumes:
       - appdata:/app/data
       - ./config.docker.json:/app/config.json

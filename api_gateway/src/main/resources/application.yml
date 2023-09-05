@@ -26,8 +26,11 @@ zuul:
     saveData-service:
       sensitiveHeaders:
       path: /api/save-data/**
-      url: http://target-app-1:8080/save-data
-
+      url: http://t5-app-1:8080/save-data
+    downloadFile-service:
+      sensitiveHeaders:
+      path: /api/downloadFile/**
+      url: http://manvsclass-controller-1:8080/downloadFile
 eureka:
   client:
     enabled: false
