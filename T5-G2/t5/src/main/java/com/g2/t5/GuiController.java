@@ -16,6 +16,7 @@ import com.g2.Model.Game;
 import com.g2.Model.Player;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -177,30 +178,32 @@ public class GuiController {
 
     @PostMapping("/save-data")
     public ResponseEntity<String> saveGame(@RequestParam("playerId") int playerId, @RequestParam("robot") String robot,
-            @RequestParam("classe") String classe, @RequestParam("difficulty") String difficulty) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        LocalTime oraCorrente = LocalTime.now();
-        String oraFormattata = oraCorrente.format(formatter);
+            @RequestParam("classe") String classe, @RequestParam("difficulty") String difficulty, HttpServletRequest request) {
 
-        GameDataWriter gameDataWriter = new GameDataWriter();
-        // g.setGameId(gameDataWriter.getGameId());
-        Game g = new Game(playerId, "descrizione", "nome", difficulty);
-        // g.setPlayerId(pl);
-        // g.setPlayerClass(classe);
-        // g.setRobot(robot);
-        g.setData_creazione(LocalDate.now());
-        g.setOra_creazione(oraFormattata);
-        g.setClasse(classe);
-        // System.out.println(g.getUsername() + " " + g.getGameId());
+                if(!request.getHeader("X-UserID").equals(String.valueOf(playerId))) return ResponseEntity.badRequest().body("Unauthorized");
 
-        // globalID = g.getGameId();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+                LocalTime oraCorrente = LocalTime.now();
+                String oraFormattata = oraCorrente.format(formatter);
 
-        JSONObject ids = gameDataWriter.saveGame(g);
+                GameDataWriter gameDataWriter = new GameDataWriter();
+                // g.setGameId(gameDataWriter.getGameId());
+                Game g = new Game(playerId, "descrizione", "nome", difficulty);
+                // g.setPlayerId(pl);
+                // g.setPlayerClass(classe);
+                // g.setRobot(robot);
+                g.setData_creazione(LocalDate.now());
+                g.setOra_creazione(oraFormattata);
+                g.setClasse(classe);
+                // System.out.println(g.getUsername() + " " + g.getGameId());
 
-        if(ids == null) return ResponseEntity.badRequest().body("Bad Request");
+                // globalID = g.getGameId();
 
-        return ResponseEntity.ok(ids.toString());
+                JSONObject ids = gameDataWriter.saveGame(g);
 
+                if(ids == null) return ResponseEntity.badRequest().body("Bad Request");
+
+                return ResponseEntity.ok(ids.toString());
     }
 
     // @PostMapping("/download")

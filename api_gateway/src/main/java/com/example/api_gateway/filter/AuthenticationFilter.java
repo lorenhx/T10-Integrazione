@@ -11,6 +11,8 @@ import org.springframework.cloud.netflix.zuul.filters.support.FilterConstants;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.api_gateway.service.JWTService;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
@@ -36,6 +38,9 @@ public class AuthenticationFilter extends ZuulFilter{
 		String jwt = getJwtCookieValue(request);
 
         if(jwt == null || !jwtService.verifyToken(jwt)) throw new ZuulException("Invalid Token", HttpStatus.UNAUTHORIZED.value(), "Token Signature is Invalid");
+		
+		requestContext.addZuulRequestHeader("X-UserID", String.valueOf(JWT.decode(jwt).getClaim("userId").asInt()));
+
 		return null;
 	}
 
