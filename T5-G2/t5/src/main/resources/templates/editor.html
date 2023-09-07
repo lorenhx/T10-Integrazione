@@ -339,7 +339,7 @@
 
           <button class="theme-button" title="Change Theme"></button>
           <button class="open-button" title="Open File"></button>
-          <button id="saveButton" class= "save-button" title="Save"></button>
+          <!-- <button id="saveButton" class= "save-button" title="Save"></button> -->
           <button class="saveAs-button" title="Save As" onclick="saveCode()"></button>
           <button class="undo-button" title="Undo"></button>
           <button class="redo-button" title="Redo"></button>
@@ -702,6 +702,7 @@ Il punteggio del robot: ${response.robotScore.toString()}`);
       }
 
       var fileName;
+      /* 
       var saveButton = document.getElementById("saveButton");
       saveButton.addEventListener("click", function() {
         $(document).ready(function() {
@@ -750,7 +751,7 @@ Il punteggio del robot: ${response.robotScore.toString()}`);
           });
         });
       });
-
+      */
       //risultati JACOCO da T7
       var coverageButton = document.getElementById("coverageButton");
         coverageButton.addEventListener("click", processJaCoCoReport);
