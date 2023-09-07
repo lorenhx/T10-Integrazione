@@ -86,8 +86,6 @@ public class SearchRepositoryImpl {
         Admin admin = new Admin("gg","ff","gg","hh");
         admin.setUsername(result.getString("username"));
         admin.setPassword(result.getString("password"));
-        admin.setUsername(result.getString("nome"));
-        admin.setPassword(result.getString("cognome"));
         return admin;
     }
     
