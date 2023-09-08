@@ -654,42 +654,46 @@ public class NomeClasseTest {
         //   });
         // });
         $(document).ready(function() {
-          var formData = new FormData();
-          formData.append("testingClassName", "NomeClasseTest.java");
-          formData.append("testingClassCode", editor.getValue());
-          formData.append("underTestClassName", localStorage.getItem("classe")+".java");
-          formData.append("underTestClassCode", sidebarEditor.getValue());
+          if(localStorage.getItem("turnId") == null) {
+            alert("Hai già sottomesso il tuo tentativo!");
+          } else {
+            var formData = new FormData();
+            formData.append("testingClassName", "NomeClasseTest.java");
+            formData.append("testingClassCode", editor.getValue());
+            formData.append("underTestClassName", localStorage.getItem("classe")+".java");
+            formData.append("underTestClassCode", sidebarEditor.getValue());
 
-          formData.append("turnId",localStorage.getItem("turnId"));
-          formData.append("roundId",localStorage.getItem("roundId"));
-          formData.append("gameId",localStorage.getItem("gameId"));
-          formData.append("testClassId", localStorage.getItem("classe"));
-          formData.append("difficulty", localStorage.getItem("difficulty"));
-          formData.append("type", "randoop");
-          $.ajax({
-            url: "http://localhost/api/run", // con questa verso il task 6, si salva e conclude la partita e si decreta il vincitore
-            type: "POST",
-            data: formData,
-            processData: false,
-            contentType: false,
-            dataType: "json",
-            success: function(response) {
-              console.log(response);
+            formData.append("turnId",localStorage.getItem("turnId"));
+            formData.append("roundId",localStorage.getItem("roundId"));
+            formData.append("gameId",localStorage.getItem("gameId"));
+            formData.append("testClassId", localStorage.getItem("classe"));
+            formData.append("difficulty", localStorage.getItem("difficulty"));
+            formData.append("type", "randoop");
+            $.ajax({
+              url: "http://localhost/api/run", // con questa verso il task 6, si salva e conclude la partita e si decreta il vincitore
+              type: "POST",
+              data: formData,
+              processData: false,
+              contentType: false,
+              dataType: "json",
+              success: function(response) {
+                console.log(response);
 
-              consoleArea.setValue(response.outCompile);
-              highlightCodeCoverage($.parseXML(response.coverage));
-              consoleArea2.setValue(`Esito Risultati (percentuale di linee coperte)
-Il tuo punteggio: ${response.score.toString()}% LOC
-Il punteggio del robot: ${response.robotScore.toString()}% LOC`);
-              
-              alert(response.win == true ? "Hai vinto!" : "Hai perso!");
-              // localStorage.clear(); -- DOPO LA SOTTOMISSIONE DEL PROPRIO TENTATIVO SI DOVREBBE PASSARE AL ROUND SUCCESSIVO O RITORNARE AL MENU DI SCELTA
-            },
-            error: function() {
-              // Gestisci l'errore, ad esempio mostra un messaggio di errore
-              console.log("Errore durante l'invio della partita.");
-            }
-          });
+                consoleArea.setValue(response.outCompile);
+                highlightCodeCoverage($.parseXML(response.coverage));
+                consoleArea2.setValue(`Esito Risultati (percentuale di linee coperte)
+  Il tuo punteggio: ${response.score.toString()}% LOC
+  Il punteggio del robot: ${response.robotScore.toString()}% LOC`);
+                
+                alert(response.win == true ? "Hai vinto!" : "Hai perso!");
+                localStorage.clear();
+              },
+              error: function() {
+                // Gestisci l'errore, ad esempio mostra un messaggio di errore
+                console.log("Errore durante l'invio della partita.");
+              }
+            }); 
+          }
         });
       });
       function getJavaClassContent() {
